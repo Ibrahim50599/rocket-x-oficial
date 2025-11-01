@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rocket X - Professional</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <audio id="crash-sound" src="crash.mp3" preload="auto"></audio>
+    <audio id="win-sound" src="win.mp3" preload="auto"></audio>
+    <audio id="background-music" src="background.mp3" loop preload="auto"></audio>
+
+    <div id="app">
+        <h1>Rocket X - Ganho Rápido</h1>
+
+        <h3 id="players-count">👥 0 Pessoas Apostando...</h3>
+
+        <div id="banner-ad-top" class="ad-placeholder">
+             [Google AdMob Banner - Área TOP]
+        </div>
+
+        <div id="history-container">
+            <h3>Colapsos Anteriores:</h3>
+            <ul id="history-list"></ul>
+        </div>
+
+        <div id="game-area">
+            <h2 id="multiplicador-display">1.00x</h2>
+
+            <div id="foguete-animation-area">
+                <div id="rocket">
+                    <div class="flame"></div>
+                </div>
+            </div>
+
+            <p id="message">Aguardando a fase de aposta...</p>
+        </div>
+
+        <div class="controls-grid">
+
+            <div class="aposta-panel" data-slot="1">
+                <h3>Aposta 1</h3>
+                <input type="number" class="aposta-input" value="10" min="1">
+                <button class="btn-apostar" data-slot="1" onclick="apostar(1)">APOSTAR</button>
+                <button class="btn-sacar" data-slot="1" onclick="sacar(1)" disabled>SACAR</button>
+                <p class="status-message" id="status-1"></p>
+            </div>
+
+            <div class="aposta-panel" data-slot="2">
+                <h3>Aposta 2</h3>
+                <input type="number" class="aposta-input" value="5" min="1">
+                <button class="btn-apostar" data-slot="2" onclick="apostar(2)">APOSTAR</button>
+                <button class="btn-sacar" data-slot="2" onclick="sacar(2)" disabled>SACAR</button>
+                <p class="status-message" id="status-2"></p>
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="header-info">
+            <h2 id="saldo">Capital: 1000 Créditos</h2>
+            <button id="ganhar-creditos" onclick="ganharCreditosAnuncio()">
+                📺 Assistir Anúncio (+20 Combustível)
+            </button>
+        </div>
+
+        <div id="banner-ad-bottom" class="ad-placeholder">
+            [Google AdMob Banner - Área BOTTOM]
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
