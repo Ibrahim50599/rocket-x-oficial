@@ -1,5 +1,5 @@
 // ====================================================================
-// script.js - LÓGICA COMPLETA DO ROCKET X
+// script.js - LÓGICA COMPLETA DO ROCKET X (COM CORREÇÃO DE ÁUDIO)
 // ====================================================================
 
 // --- 1. VARIÁVEIS GLOBAIS DE ESTADO ---
@@ -17,6 +17,7 @@ let timeRemaining = 0;
 let history = [];
 const MAX_HISTORY = 8;
 let simulatedPlayers = 0; // Simulação de jogadores apostando
+let musicStarted = false; // <<< ALTERAÇÃO 1: NOVA VARIÁVEL PARA O ÁUDIO
 
 // Estrutura para Gerenciar as Duas Apostas
 let slots = {
@@ -329,7 +330,13 @@ function apostar(slotId) {
         panel.statusMsg.innerHTML = `<span class="error">${aposta > saldo ? 'Saldo insuficiente!' : 'Aposta inválida.'}</span>`;
         return;
     }
-
+    
+    // <<< ALTERAÇÃO 2: INICIA MÚSICA DE FUNDO NO PRIMEIRO CLIQUE >>>
+    if (!musicStarted) {
+        startMusic();
+        musicStarted = true;
+    }
+    
     // 2. Deduz o saldo
     atualizarSaldo(saldo - aposta);
 
@@ -386,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     atualizarHistorico(1.00);
 
-    // Inicia a música e a primeira fase de aposta
-    startMusic();
+    // <<< ALTERAÇÃO 3: REMOVE CHAMADA startMusic() PARA EVITAR BLOQUEIO >>>
+    // A música agora é iniciada no primeiro clique (apostar).
     setTimeout(() => startBettingPhase(), 1000);
 });
