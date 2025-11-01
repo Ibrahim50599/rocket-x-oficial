@@ -64,6 +64,19 @@
         #ganhar-creditos:hover {
             background-color: #00aaff;
         }
+        
+        /* 💰 CORREÇÃO: Estilo discreto para marcadores de anúncio */
+        .ad-placeholder {
+            padding: 10px;
+            background: #2b2b2b; /* Fundo cinza escuro */
+            border: 1px dashed #555; /* Borda tracejada discreta */
+            margin: 15px 0;
+            color: #888; /* Texto cinza claro */
+            font-size: 0.8em;
+            text-align: center;
+            border-radius: 5px;
+        }
+
 
         /* 3. Histórico de Colapsos */
         #history-container {
@@ -301,7 +314,7 @@
             transition: all 0.2s ease-out;
         }
     </style>
-    </head>
+</head>
 <body>
 
     <audio id="crash-sound" src="crash.mp3" preload="auto"></audio>
@@ -314,7 +327,7 @@
         <h3 id="players-count">👥 0 Pessoas Apostando...</h3>
 
         <div id="banner-ad-top" class="ad-placeholder">
-             [Google AdMob Banner - Área TOP]
+            [Google AdMob Banner - Área TOP]
         </div>
 
         <div id="history-container">
@@ -370,5 +383,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
-
