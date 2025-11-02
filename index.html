@@ -12,16 +12,22 @@
     <style>
         /* style.css - Estilização Profissional e Foguete Premium */
 
-        /* 1. Reset Básico e Fundo Profissional */
+        /* 1. Reset Básico e Fundo Profissional - CORREÇÃO DO SCROLL AQUI */
         body, html {
             margin: 0;
             padding: 0;
-            font-family: 'Montserrat', sans-serif; /* Fonte mais moderna */
+            font-family: 'Montserrat', sans-serif;
             color: #fff;
+            
             /* Fundo de espaço mais detalhado com camadas de estrelas */
             background: #0a0a1a;
-            overflow: hidden; /* Garante que as estrelas em movimento não causem barras de rolagem */
-            min-height: 100vh;
+            
+            /* CORREÇÃO DO SCROLL: Permite rolagem vertical */
+            overflow-x: hidden; 
+            
+            /* Garantir que o body tenha pelo menos a altura da tela */
+            min-height: 100vh; 
+            
             display: flex;
             flex-direction: column;
             position: relative;
@@ -34,13 +40,14 @@
             padding: 25px;
             text-align: center;
             flex-grow: 1;
-            position: relative; /* Para posicionar elementos */
+            position: relative;
             z-index: 2; /* Acima do fundo de estrelas */
+            min-height: 100%; /* Permite que o conteúdo interno use o espaço */
         }
 
         h1 {
             color: #00e5ff; /* Ciano Neon para título principal */
-            font-size: 2.8em; /* Maior e mais impactante */
+            font-size: 2.8em; 
             margin-bottom: 5px;
             text-shadow: 0 0 15px rgba(0, 229, 255, 0.8), 0 0 30px rgba(0, 229, 255, 0.4);
             font-weight: 900;
@@ -57,6 +64,7 @@
 
         /* 2. Área de Informações Superiores (Saldo e Créditos) */
         .header-info {
+            /* ORDENAÇÃO CORRIGIDA: Este bloco fica no topo, após os títulos */
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -70,14 +78,14 @@
 
         #saldo {
             color: #00ff88; /* Verde Sucesso */
-            font-size: 1.8em; /* Maior */
+            font-size: 1.8em;
             font-weight: 900;
             text-shadow: 0 0 8px rgba(0, 255, 136, 0.6);
         }
 
         #ganhar-creditos {
             padding: 12px 20px;
-            background-color: #ff4500; /* Laranja forte */
+            background-color: #ff4500;
             color: #fff;
             border: none;
             border-radius: 10px;
@@ -121,7 +129,7 @@
         }
 
         #history-container h3 {
-            color: #00e5ff; /* Ciano Neon */
+            color: #00e5ff;
             margin-bottom: 10px;
         }
 
@@ -131,7 +139,7 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 12px; /* Espaço maior entre os itens */
+            gap: 12px;
         }
 
         #history-list li {
@@ -147,15 +155,15 @@
             transform: translateY(-2px) scale(1.05);
         }
 
-        .low-result { background-color: #ff5555; } /* Vermelho */
-        .mid-result { background-color: #ffa500; } /* Laranja */
-        .high-result { background-color: #00cc66; } /* Verde */
+        .low-result { background-color: #ff5555; }
+        .mid-result { background-color: #ffa500; }
+        .high-result { background-color: #00cc66; }
 
         /* 4. Layout de Duas Apostas e Controles */
         .controls-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 25px; /* Mais espaço */
+            gap: 25px;
             margin: 25px 0;
         }
 
@@ -176,7 +184,7 @@
         }
 
         .aposta-input {
-            width: calc(100% - 40px); /* Ajuste para padding */
+            width: calc(100% - 40px);
             padding: 12px;
             margin-bottom: 15px;
             border: 2px solid #444466;
@@ -246,7 +254,7 @@
         }
 
         .status-message {
-            min-height: 25px; /* Garante altura para mensagens */
+            min-height: 25px;
             margin-top: 15px;
             font-weight: bold;
             font-size: 1em;
@@ -264,47 +272,47 @@
             padding: 25px 0;
             box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), inset 0 0 20px #33334d;
             margin-bottom: 30px;
-            min-height: 450px; /* Mais alto */
+            min-height: 450px;
             position: relative;
-            overflow: hidden;
+            overflow: hidden; /* Mantém o foguete e estrelas dentro desta área */
             border: 2px solid #3a3a5a;
         }
 
         #multiplicador-display {
-            font-size: 8em; /* Enorme */
+            font-size: 8em;
             font-weight: 900;
             color: #00ff88;
             text-shadow: 0 0 30px rgba(0, 255, 136, 0.9), 0 0 60px rgba(0, 255, 136, 0.5);
             position: relative;
             z-index: 10;
-            transition: all 0.1s ease-out; /* Para transições suaves entre estados */
+            transition: all 0.1s ease-out;
         }
 
-        /* Animação do Multiplicador */
+        /* Animações de Estado do Multiplicador */
         @keyframes flash-green {
             0%, 100% { color: #00ff88; text-shadow: 0 0 30px rgba(0, 255, 136, 0.9), 0 0 60px rgba(0, 255, 136, 0.5); }
             50% { color: #ffffff; text-shadow: none; }
         }
-        @keyframes flash-red { /* Novo: para colapso */
+        @keyframes flash-red {
             0%, 100% { color: #ff5555; text-shadow: 0 0 25px rgba(255, 85, 85, 0.9), 0 0 50px rgba(255, 85, 85, 0.5); }
             50% { color: #ffffff; text-shadow: none; }
         }
 
         .status-bet-ready {
-            color: #ff9900 !important; /* Laranja de espera */
+            color: #ff9900 !important;
             text-shadow: 0 0 15px rgba(255, 153, 0, 0.8), 0 0 30px rgba(255, 153, 0, 0.4);
             animation: none;
         }
 
         .status-flying {
             color: #00ff88 !important;
-            animation: flash-green 1s infinite alternate; /* Alterna para um efeito mais suave */
+            animation: flash-green 1s infinite alternate;
         }
 
         .status-crashed {
             color: #ff5555 !important;
             text-shadow: 0 0 25px rgba(255, 85, 85, 0.9), 0 0 50px rgba(255, 85, 85, 0.5);
-            animation: flash-red 0.5s ease-out 3; /* Pisca vermelho 3 vezes rapidamente */
+            animation: flash-red 0.5s ease-out 3;
         }
 
         /* Estrelas de Fundo (Efeito de Profundidade - Múltiplas Camadas) */
@@ -316,8 +324,8 @@
             height: 100%;
             background-repeat: repeat;
             pointer-events: none;
-            z-index: 0; /* Abaixo do #app */
-            transition: transform 0.1s linear; /* Para o JS controlar o parallax */
+            z-index: 0;
+            transition: transform 0.1s linear;
         }
         .stars-layer-1 {
             background-image: radial-gradient(white 1px, transparent 0);
@@ -341,7 +349,7 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 120px; /* Área maior para o foguete */
+            width: 120px;
             height: 100%;
             display: flex;
             justify-content: center;
@@ -351,32 +359,32 @@
         }
 
         #rocket {
-            width: 60px; /* Foguete mais largo */
-            height: 120px; /* Foguete mais alto */
-            background: linear-gradient(to top, #777 0%, #aaa 50%, #ccc 100%); /* Gradiente metálico */
-            border-radius: 50% 50% 10% 10% / 50% 50% 2% 2%; /* Formato mais arredondado na ponta */
+            width: 60px;
+            height: 120px;
+            background: linear-gradient(to top, #777 0%, #aaa 50%, #ccc 100%);
+            border-radius: 50% 50% 10% 10% / 50% 50% 2% 2%;
             position: absolute;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6), inset 0 0 5px rgba(255, 255, 255, 0.3); /* Brilho e reflexo */
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.6), inset 0 0 5px rgba(255, 255, 255, 0.3);
             z-index: 5;
             opacity: 0;
-            transition: opacity 0.5s ease-out, transform 0.1s linear; /* Transição para opacidade e movimento */
-            border: 2px solid #555; /* Borda mais definida */
+            transition: opacity 0.5s ease-out, transform 0.1s linear;
+            border: 2px solid #555;
         }
 
         /* Ponta do Foguete (Cone Aerodinâmico) */
         #rocket::before {
             content: '';
             position: absolute;
-            top: -30px; /* Mais alto */
+            top: -30px;
             left: 0;
             width: 0;
             height: 0;
-            border-left: 30px solid transparent; /* Mais largo */
-            border-right: 30px solid transparent; /* Mais largo */
-            border-bottom: 40px solid #ff0055; /* Ponta Vermelho Cromo mais proeminente */
+            border-left: 30px solid transparent;
+            border-right: 30px solid transparent;
+            border-bottom: 40px solid #ff0055;
             border-radius: 50%;
             box-shadow: 0 5px 15px rgba(255, 0, 85, 0.5);
             z-index: 10;
@@ -386,34 +394,33 @@
         #rocket::after {
             content: '';
             position: absolute;
-            bottom: 10px; /* Levanta um pouco as asas */
-            left: -35px; /* Mais para fora */
+            bottom: 10px;
+            left: -35px;
             width: 0;
             height: 0;
-            border-top: 50px solid transparent; /* Mais alto */
+            border-top: 50px solid transparent;
             border-bottom: 0px solid transparent;
-            border-right: 35px solid #444; /* Mais largo */
+            border-right: 35px solid #444;
             transform: skewY(15deg);
             box-shadow: -5px 5px 10px rgba(0, 0, 0, 0.7);
             z-index: 4;
         }
 
         .flame {
-            width: 40px; /* Chama maior e mais intensa */
+            width: 40px;
             height: 60px;
-            background: radial-gradient(circle at 50% 100%, #ffdf00 0%, #ff6600 50%, #ff0000 100%); /* Gradiente de fogo real */
+            background: radial-gradient(circle at 50% 100%, #ffdf00 0%, #ff6600 50%, #ff0000 100%);
             border-radius: 50% 50% 30% 30%;
             position: absolute;
-            bottom: -55px; /* Mais para baixo para a chama sair da base */
+            bottom: -55px;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 0 30px #ff6600, 0 0 60px #ff0000, 0 0 90px rgba(255, 220, 0, 0.7); /* Brilho de fogo */
+            box-shadow: 0 0 30px #ff6600, 0 0 60px #ff0000, 0 0 90px rgba(255, 220, 0, 0.7);
             opacity: 0;
             z-index: 3;
             transition: opacity 0.3s ease-in;
         }
 
-        /* Animação da Chama (Efeito de impulso mais complexo) */
         @keyframes flame-pulse {
             0% { height: 60px; width: 40px; opacity: 1; transform: translateX(-50%) scaleY(1); }
             25% { height: 75px; width: 45px; opacity: 0.9; transform: translateX(-50%) scaleY(1.1); }
@@ -423,16 +430,14 @@
         }
 
         .flame-active {
-            animation: flame-pulse 0.2s infinite alternate; /* Animação mais rápida e alternada */
+            animation: flame-pulse 0.2s infinite alternate;
             opacity: 1;
         }
 
-        /* Animação de Voo (A ser definida por JS - controle de opacity) */
         .rocket-flying {
             opacity: 1 !important;
         }
 
-        /* Efeito de Colapso (explosão) - O foguete "se desintegra" */
         @keyframes explode {
             0% { transform: translateX(-50%) translateY(var(--rocket-y, 0px)) scale(1); opacity: 1; }
             50% { transform: translateX(calc(-50% + var(--shake-x, 0px))) translateY(calc(var(--rocket-y, 0px) - 20px)) scale(1.1); opacity: 0.8; filter: brightness(2); }
@@ -440,18 +445,17 @@
         }
 
         .rocket-crashed {
-            animation: explode 0.5s ease-out forwards; /* Animação de explosão */
+            animation: explode 0.5s ease-out forwards;
             opacity: 0 !important;
         }
 
-        /* Estilo para a mensagem do jogo */
         #message {
             font-size: 1.2em;
             font-weight: bold;
             color: #eee;
             margin-top: 15px;
             min-height: 30px;
-            z-index: 10; /* Acima do foguete */
+            z-index: 10;
             position: relative;
             text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
         }
