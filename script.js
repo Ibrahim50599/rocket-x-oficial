@@ -1,403 +1,392 @@
-// =========================================================
-// script.js - Lógica do Jogo Rocket X (Versão Corrigida e Completa)
-// =========================================================
+// ====================================================================
+// script.js - LÓGICA COMPLETA DO ROCKET X
+// ====================================================================
 
-// =========================================================
-// 1. Variáveis de Estado Global e Referências do DOM
-// =========================================================
-
+// --- 1. VARIÁVEIS GLOBAIS DE ESTADO ---
 let saldo = 1000;
-let multiplicador = 1.00;
-let isBettingPhase = true;
-let isFlying = false;
-let gameTimer = null;
-let countdownTimer = null;
-let crashPoint = 0;
+const CREDITOS_POR_ANUNCIO = 20;
+const BETTING_TIME_MS = 6000; // Tempo de aposta de 6 segundos
 
-let betData = {
-    1: { apostado: false, valor: 0, sacado: false, ganho: 0 },
-    2: { apostado: false, valor: 0, sacado: false, ganho: 0 }
+let multiplicador = 1.00;
+let crashPoint = 0;
+let gameInterval;
+let gameRunning = false;
+let bettingPhase = true;  // Indica se estamos na fase de espera/aposta
+let timeRemaining = 0;
+
+let history = [];
+const MAX_HISTORY = 8;
+let simulatedPlayers = 0; // Simulação de jogadores apostando
+
+// Estrutura para Gerenciar as Duas Apostas
+let slots = {
+    1: {
+        apostaAtual: 0,
+        sacado: false,
+        sacadoMulti: 0,
+        isApostando: false
+    },
+    2: {
+        apostaAtual: 0,
+        sacado: false,
+        sacadoMulti: 0,
+        isApostando: false
+    }
 };
 
-// Referências de Elementos do DOM
+// --- 2. REFERÊNCIAS DOM (HTML) ---
 const saldoDisplay = document.getElementById('saldo');
-const multiplicadorDisplay = document.getElementById('multiplicador-display');
-const messageDisplay = document.getElementById('message');
-const historyList = document.getElementById('history-list');
+const multiDisplay = document.getElementById('multiplicador-display');
+const msgDisplay = document.getElementById('message');
+const btnGanharCreditos = document.getElementById('ganhar-creditos');
 const rocket = document.getElementById('rocket');
-const flame = document.querySelector('.flame');
-const starsBg = document.getElementById('stars-bg'); // Agora usamos a div stars-bg
-const playersCountDisplay = document.getElementById('players-count');
+const flame = document.querySelector('#rocket .flame');
+const historyList = document.getElementById('history-list');
+const playersCountDisplay = document.getElementById('players-count'); // Novo
 
-// Referências de Áudio
+// Array de Referências para os Painéis
+const betPanels = [
+    null,
+    {
+        input: document.querySelector('.aposta-panel[data-slot="1"] .aposta-input'),
+        btnApostar: document.querySelector('.btn-apostar[data-slot="1"]'),
+        btnSacar: document.querySelector('.btn-sacar[data-slot="1"]'),
+        statusMsg: document.getElementById('status-1')
+    },
+    {
+        input: document.querySelector('.aposta-panel[data-slot="2"] .aposta-input'),
+        btnApostar: document.querySelector('.btn-apostar[data-slot="2"]'),
+        btnSacar: document.querySelector('.btn-sacar[data-slot="2"]'),
+        statusMsg: document.getElementById('status-2')
+    }
+];
+
+// --- 3. REFERÊNCIAS DE ÁUDIO ---
 const crashSound = document.getElementById('crash-sound');
 const winSound = document.getElementById('win-sound');
 const bgMusic = document.getElementById('background-music');
 
-// =========================================================
-// 2. Funções de Atualização da UI
-// =========================================================
+// --- 4. FUNÇÕES AUXILIARES ---
 
-function updateUI() {
-    saldoDisplay.textContent = `Capital: ${saldo.toFixed(2)} Créditos`;
-    // Simula a contagem de jogadores
-    playersCountDisplay.textContent = `👥 ${Math.floor(Math.random() * 50) + 10} Pessoas Apostando...`;
+function playSound(audioElement) {
+    audioElement.currentTime = 0;
+    audioElement.volume = 0.5;
+    audioElement.play().catch(e => console.warn('Aviso: Áudio bloqueado ou não encontrado.', e));
 }
 
-function updateBetControls() {
-    for (let slot = 1; slot <= 2; slot++) {
-        const btnApostar = document.querySelector(`.btn-apostar[data-slot="${slot}"]`);
-        const btnSacar = document.querySelector(`.btn-sacar[data-slot="${slot}"]`);
-        const statusMessage = document.getElementById(`status-${slot}`);
-        const input = document.querySelector(`.aposta-input[data-slot="${slot}"]`);
-        const apostaEfetuada = betData[slot].apostado;
-
-        input.disabled = apostaEfetuada || !isBettingPhase;
-        btnApostar.disabled = apostaEfetuada || !isBettingPhase;
-        btnSacar.disabled = true; // Desabilita por padrão
-
-        if (isBettingPhase) {
-            // Fase de Aposta
-            btnApostar.textContent = apostaEfetuada ? `APOSTADO: ${betData[slot].valor.toFixed(2)}` : 'APOSTAR';
-            statusMessage.innerHTML = apostaEfetuada ? `<span class="warning">Aguardando Início...</span>` : '';
-        } 
-        
-        if (isFlying) {
-            // Fase de Voo
-            if (apostaEfetuada) {
-                btnApostar.textContent = 'Em Voo...';
-                if (!betData[slot].sacado) {
-                    // Pode Sacar
-                    btnSacar.disabled = false;
-                    const valorAtual = (betData[slot].valor * multiplicador).toFixed(2);
-                    btnSacar.textContent = `SACAR ${valorAtual}`;
-                    statusMessage.innerHTML = `<span class="success">Ganhando: ${valorAtual}x</span>`;
-                } else {
-                    // Já Sacou
-                    btnSacar.disabled = true;
-                    btnSacar.textContent = `SAQUE EM ${betData[slot].multiplicadorSaque.toFixed(2)}x`;
-                    statusMessage.innerHTML = `<span class="success">Ganho: ${betData[slot].ganho.toFixed(2)}</span>`;
-                }
-            } else {
-                 btnApostar.textContent = 'Não Apostado';
-            }
-        } 
-        
-        if (!isFlying && !isBettingPhase) {
-            // Fase Pós-Crash
-            btnApostar.textContent = 'APOSTAR';
-            btnSacar.textContent = 'SACAR';
-            if (apostaEfetuada && !betData[slot].sacado) {
-                 statusMessage.innerHTML = `<span class="error">Perdeu! Crash em ${multiplicador.toFixed(2)}x</span>`;
-            }
-            if (!apostaEfetuada) {
-                 statusMessage.textContent = '';
-            }
-        }
-    }
+function startMusic() {
+    bgMusic.volume = 0.3;
+    bgMusic.play().catch(e => console.warn('Aviso: Música de fundo bloqueada.', e));
 }
 
-// =========================================================
-// 3. Lógica Principal do Jogo
-// =========================================================
+function atualizarSaldo(valor) {
+    saldo = Math.max(0, Math.floor(valor));
+    saldoDisplay.textContent = `Capital: ${saldo} Créditos`;
+    localStorage.setItem('rocketXSaldo', saldo);
+}
 
-function apostar(slot) {
-    if (!isBettingPhase || betData[slot].apostado) return;
-
-    const input = document.querySelector(`.aposta-input[data-slot="${slot}"]`);
-    let valorAposta = parseFloat(input.value);
-
-    if (isNaN(valorAposta) || valorAposta <= 0) {
-        alert('O valor da aposta deve ser um número positivo.');
-        return;
-    }
-    if (valorAposta > saldo) {
-        alert('Saldo insuficiente!');
-        return;
+function atualizarHistorico(novoResultado) {
+    history.unshift(novoResultado);
+    if (history.length > MAX_HISTORY) {
+        history.pop();
     }
 
-    // Efetiva a aposta
-    saldo -= valorAposta;
-    betData[slot] = { 
-        apostado: true, 
-        valor: valorAposta, 
-        sacado: false, 
-        ganho: 0,
-        multiplicadorSaque: 0 // Novo campo para rastrear o saque
-    };
+    historyList.innerHTML = '';
+    history.forEach(result => {
+        const li = document.createElement('li');
+        li.textContent = `${result.toFixed(2)}x`;
 
-    updateUI();
-    updateBetControls();
-}
+        let resultClass;
+        if (result < 2.0) resultClass = 'low-result';
+        else if (result < 5.0) resultClass = 'mid-result';
+        else resultClass = 'high-result';
 
-function sacar(slot) {
-    if (!isFlying || !betData[slot].apostado || betData[slot].sacado) return;
-
-    // Calcula o ganho com o multiplicador atual
-    const ganho = betData[slot].valor * multiplicador;
-    saldo += ganho;
-
-    betData[slot].sacado = true;
-    betData[slot].ganho = ganho;
-    betData[slot].multiplicadorSaque = multiplicador; // Registra o multiplicador
-
-    // Efeito de som
-    winSound.currentTime = 0;
-    winSound.play();
-    
-    // Altera o estilo do botão para indicar saque completo
-    const btnSacar = document.querySelector(`.btn-sacar[data-slot="${slot}"]`);
-    btnSacar.classList.add('btn-sacar-done');
-    
-    updateUI();
-    updateBetControls();
-}
-
-
-function startGameCycle() {
-    resetGame();
-    
-    // 1. Fase de Aposta (5 segundos)
-    messageDisplay.textContent = 'FASE DE APOSTA';
-    multiplicadorDisplay.textContent = 'Aguarde...';
-
-    let countdown = 5;
-    
-    countdownTimer = setInterval(() => {
-        countdown--;
-        messageDisplay.textContent = `Próximo Voo em: ${countdown} Segundos...`;
-        
-        if (countdown <= 0) {
-            clearInterval(countdownTimer);
-            startFlight();
-        }
-    }, 1000);
-}
-
-function startFlight() {
-    isBettingPhase = false;
-    isFlying = true;
-    multiplicador = 1.00;
-    
-    // Gera o ponto de crash aleatório (Entre 1.01x e um máximo razoável, com foco em crashes baixos)
-    const r = Math.random();
-    // Função de distribuição que favorece resultados baixos: -log(1-r) / k
-    // k = 0.08 dá uma boa distribuição com média baixa (entre 2 e 3x)
-    crashPoint = 1 + (Math.log(1 - r) / -0.08); 
-    
-    // Garantir que seja pelo menos 1.01x
-    if (crashPoint < 1.01) crashPoint = 1.01;
-    // Limite máximo para evitar números absurdos
-    if (crashPoint > 150) crashPoint = 150; 
-    
-    crashPoint = parseFloat(crashPoint.toFixed(2));
-    
-    // Inicia Animações e Multiplicador
-    multiplicadorDisplay.classList.remove('status-bet-ready');
-    multiplicadorDisplay.classList.add('status-flying');
-    messageDisplay.textContent = '🚀 Foguete Subindo!';
-    
-    startRocketAnimation(); // Faz o foguete aparecer!
-    updateBetControls();
-    
-    // Lógica do Multiplicador Baseada no Tempo
-    const startTime = Date.now();
-    
-    gameTimer = setInterval(() => {
-        if (!isFlying) {
-            clearInterval(gameTimer);
-            return;
-        }
-
-        const elapsedSeconds = (Date.now() - startTime) / 1000;
-        
-        // Fórmula de crescimento (exponencial suave): 1 + (e ^ (tempo * fator)) - 1
-        multiplicador = 1 + (Math.exp(elapsedSeconds * 0.45) - 1);
-        
-        // Arredonda para 2 casas decimais, mas mantém a precisão para a checagem do crash
-        const displayMulti = multiplicador.toFixed(2);
-        
-        // 1. Verifica o Crash (Usamos o valor real do multiplicador para checar)
-        if (multiplicador >= crashPoint) {
-            crashGame(multiplicador);
-            return;
-        }
-
-        // 2. Atualiza UI e Parallax
-        multiplicadorDisplay.textContent = displayMulti + 'x';
-        
-        // Efeito de Parallax Aumentado com o Multiplicador
-        const parallaxFactor = Math.min(0.5, elapsedSeconds / 5);
-        starsBg.style.transform = `translateY(${elapsedSeconds * 100 * parallaxFactor}px)`;
-        rocket.style.transform = `translateX(-50%) translateY(${-elapsedSeconds * 100 * parallaxFactor}px) scale(${1 + elapsedSeconds * 0.1})`; // Sobe e cresce levemente
-
-        // 3. Atualiza os botões de Saque para o valor atual
-        updateBetControls();
-
-    }, 100); // Atualiza a cada 100ms
-}
-
-function crashGame(finalMulti) {
-    isFlying = false;
-    clearInterval(gameTimer);
-    
-    // 1. Efeito de som
-    crashSound.currentTime = 0;
-    crashSound.play();
-
-    // 2. Atualizar Display
-    multiplicadorDisplay.textContent = finalMulti.toFixed(2) + 'x';
-    multiplicadorDisplay.classList.remove('status-flying');
-    multiplicadorDisplay.classList.add('status-crashed');
-    messageDisplay.textContent = `💥 CRASH! Em ${finalMulti.toFixed(2)}x`;
-    
-    // 3. Animação de Crash do Foguete
-    stopRocketAnimation(true);
-
-    // 4. Verifica perdas para apostas não sacadas
-    for (const slot in betData) {
-        const data = betData[slot];
-        if (data.apostado && !data.sacado) {
-            // Aposta perdida. O saldo já foi deduzido no 'apostar'.
-            // A mensagem de erro será definida no updateBetControls, mas garantimos que o status seja atualizado.
-        }
-    }
-    
-    // 5. Adiciona ao Histórico
-    addToHistory(finalMulti);
-
-    // 6. Próximo Jogo
-    updateBetControls();
-
-    // Inicia o próximo ciclo após 4 segundos para o jogador reagir
-    setTimeout(startGameCycle, 4000); 
-}
-
-function resetGame() {
-    isBettingPhase = true;
-    isFlying = false;
-    multiplicador = 1.00;
-    
-    // Limpa os temporizadores
-    if (gameTimer) clearInterval(gameTimer);
-    if (countdownTimer) clearInterval(countdownTimer);
-    
-    betData = {
-        1: { apostado: false, valor: 0, sacado: false, ganho: 0, multiplicadorSaque: 0 },
-        2: { apostado: false, valor: 0, sacado: false, ganho: 0, multiplicadorSaque: 0 }
-    };
-    
-    // Reset da UI e Animações
-    multiplicadorDisplay.textContent = '1.00x';
-    multiplicadorDisplay.classList.remove('status-flying', 'status-crashed');
-    multiplicadorDisplay.classList.add('status-bet-ready');
-    messageDisplay.textContent = 'Aguardando a fase de aposta...';
-    
-    // Remove o estilo de saque concluído
-    document.querySelectorAll('.btn-sacar').forEach(btn => {
-        btn.classList.remove('btn-sacar-done');
-    });
-
-    // Reset da Animação do Foguete
-    stopRocketAnimation(false);
-    
-    // Reset do Parallax
-    starsBg.style.transform = 'translateY(0)';
-
-    updateUI();
-    updateBetControls();
-}
-
-
-// =========================================================
-// 4. Funções de Animação (Corrigidas)
-// =========================================================
-
-function startRocketAnimation() {
-    // Faz o foguete aparecer e inicia a chama
-    flame.classList.add('flame-active');
-    rocket.classList.add('rocket-flying');
-    rocket.classList.remove('rocket-crashed');
-}
-
-function stopRocketAnimation(crashed) {
-    // Remove a chama
-    flame.classList.remove('flame-active');
-    rocket.classList.remove('rocket-flying');
-    
-    if (crashed) {
-        // Efeito de explosão (CSS cuida do desaparecimento)
-        rocket.classList.add('rocket-crashed');
-    } else {
-        // Volta para o estado inicial, invisível e na base
-        rocket.classList.remove('rocket-crashed');
-        rocket.style.transform = 'translateX(-50%) translateY(0px)';
-        rocket.style.opacity = 0; // O CSS original define opacity: 0
-    }
-}
-
-// =========================================================
-// 5. Funções de Histórico e Extras
-// =========================================================
-
-function addToHistory(result) {
-    const li = document.createElement('li');
-    const resultFixed = result.toFixed(2) + 'x';
-
-    // Determina a classe de cor
-    if (result < 1.50) {
-        li.classList.add('low-result');
-    } else if (result < 3.00) {
-        li.classList.add('mid-result');
-    } else {
-        li.classList.add('high-result');
-    }
-
-    li.textContent = resultFixed;
-
-    // Adiciona no início da lista (os mais recentes no topo)
-    if (historyList.firstChild) {
-        historyList.insertBefore(li, historyList.firstChild);
-    } else {
+        li.className = resultClass;
         historyList.appendChild(li);
-    }
-    
-    // Limita a lista a 15 itens
-    while (historyList.children.length > 15) {
-        historyList.removeChild(historyList.lastChild);
-    }
+    });
+    localStorage.setItem('rocketXHistory', JSON.stringify(history));
 }
 
+// 💰 FUNÇÃO DE MONETIZAÇÃO (SIMULADA)
 function ganharCreditosAnuncio() {
-    // Simula ganho de créditos via anúncio
-    saldo += 20;
-    alert("Créditos adicionados! (+20). Tente novamente!");
-    updateUI();
+    if (gameRunning || bettingPhase) {
+        msgDisplay.innerHTML = '<span class="error">Aguarde o ciclo de aposta/voo terminar.</span>';
+        return;
+    }
+
+    // Simulação do anúncio recompensado (5s)
+    btnGanharCreditos.disabled = true;
+    msgDisplay.innerHTML = '<span class="warning">📺 Exibindo Anúncio Recompensado... (5s)</span>';
+
+    setTimeout(() => {
+        atualizarSaldo(saldo + CREDITOS_POR_ANUNCIO);
+        msgDisplay.innerHTML = `<span class="success">🥳 Sucesso! Você recebeu ${CREDITOS_POR_ANUNCIO} créditos de Combustível.</span>`;
+        btnGanharCreditos.disabled = false;
+        playSound(winSound);
+
+        // Retorna ao estado de aposta
+        if (!gameRunning) startBettingPhase();
+    }, 5000);
 }
 
-// =========================================================
-// 6. Inicialização
-// =========================================================
+// --- 5. LÓGICA DO CICLO DO JOGO ---
 
-function startBackgroundMusic() {
-    // Tenta iniciar a música, mas pode falhar se não houver interação
-    try {
-        bgMusic.volume = 0.5; // Ajusta o volume para não ser muito alto
-        bgMusic.play();
-    } catch (e) {
-        console.warn("Música de fundo não iniciada automaticamente. Requer interação do usuário.");
+/**
+ * Inicia a fase de espera e aposta (6 segundos).
+ */
+function startBettingPhase() {
+    clearInterval(gameInterval);
+    bettingPhase = true;
+    gameRunning = false;
+    timeRemaining = BETTING_TIME_MS / 1000;
+
+    multiDisplay.textContent = '1.00x';
+    multiDisplay.className = 'status-bet-ready';
+
+    // Reseta e habilita as slots para novas apostas
+    for (let slotId = 1; slotId <= 2; slotId++) {
+        slots[slotId].apostaAtual = 0;
+        slots[slotId].sacado = false;
+        slots[slotId].sacadoMulti = 0;
+        slots[slotId].isApostando = false;
+
+        betPanels[slotId].btnApostar.disabled = false;
+        betPanels[slotId].btnSacar.disabled = true;
+        betPanels[slotId].input.disabled = false;
+        betPanels[slotId].statusMsg.textContent = 'PRONTO';
+        betPanels[slotId].btnApostar.textContent = 'APOSTAR'; // Reseta o texto
+    }
+
+    // Simula o número de jogadores
+    simulatedPlayers = Math.floor(Math.random() * 101) + 50;
+
+    // Reseta Animação do Foguete
+    rocket.style.transition = 'none';
+    rocket.style.transform = 'translateY(0) scale(1)';
+    rocket.classList.remove('rocket-crashed', 'rocket-flying');
+    flame.classList.remove('flame-active');
+
+    // Inicia o contador de tempo
+    gameInterval = setInterval(updateBettingPhase, 1000);
+}
+
+/**
+ * Atualiza o estado durante a fase de aposta (contagem regressiva).
+ */
+function updateBettingPhase() {
+    playersCountDisplay.textContent = `👥 ${simulatedPlayers} Pessoas Apostando (Lançamento em ${timeRemaining}s)`;
+
+    if (timeRemaining <= 0) {
+        clearInterval(gameInterval);
+        msgDisplay.textContent = 'APOSTAS FECHADAS! Foguete decolando...';
+
+        // Bloqueia a aposta e input
+        for (let slotId = 1; slotId <= 2; slotId++) {
+            betPanels[slotId].btnApostar.disabled = true;
+            betPanels[slotId].input.disabled = true;
+        }
+
+        setTimeout(() => iniciarRodada(), 1000);
+
+    } else {
+        msgDisplay.textContent = `APOSTE AGORA! Tempo restante: ${timeRemaining} segundos.`;
+        timeRemaining--;
     }
 }
 
-// Inicia o ciclo de jogo e o primeiro estado de aposta
+/**
+ * Inicia o voo.
+ */
+function iniciarRodada() {
+    clearInterval(gameInterval);
+    gameRunning = true;
+    bettingPhase = false;
+    simulatedPlayers = 0; // O contador de pessoas some/zera durante o voo
+    playersCountDisplay.textContent = '🚀 FOGUETE VOANDO!';
+
+    // Configura Multiplicador e Crash Point
+    multiplicador = 1.00;
+    multiDisplay.textContent = '1.00x';
+    multiDisplay.className = 'status-flying';
+
+    let r = Math.random();
+    // Gera crash point mais realista (maior chance de colapso cedo)
+    if (r < 0.8) {
+        crashPoint = parseFloat((Math.random() * 3 + 1.05).toFixed(2));
+    } else {
+        crashPoint = parseFloat((Math.random() * 6 + 4.0).toFixed(2));
+    }
+
+    // Ativa SACAR para slots ativas
+    for (let slotId = 1; slotId <= 2; slotId++) {
+        if (slots[slotId].isApostando) {
+            betPanels[slotId].btnSacar.disabled = false;
+            betPanels[slotId].statusMsg.textContent = 'VOANDO...';
+        }
+    }
+
+    // Inicia Animação do Foguete
+    rocket.classList.add('rocket-flying');
+    flame.classList.add('flame-active');
+
+    // Inicia o Loop de Voo
+    gameInterval = setInterval(updateGame, 100);
+}
+
+/**
+ * Loop principal de voo (Atualiza o multiplicador e o foguete).
+ */
+function updateGame() {
+    if (!gameRunning) return;
+
+    // Lógica de Crescimento (Aceleração leve)
+    multiplicador += 0.01 + (multiplicador / 700);
+    multiplicador = parseFloat(multiplicador.toFixed(2));
+
+    multiDisplay.textContent = `${multiplicador.toFixed(2)}x`;
+
+    // Animação e Efeito Visual do Foguete
+    const max_height_px = 350;
+    let current_height = Math.min(max_height_px, (multiplicador - 1.0) * 50);
+
+    rocket.style.transition = 'transform 0.5s linear';
+    rocket.style.transform = `translateY(-${current_height}px) scale(1)`;
+
+    // Verifica o Ponto de Colapso
+    if (multiplicador >= crashPoint) {
+        endGame();
+        return;
+    }
+
+    // Atualiza o texto dos botões de saque (sempre atualizado)
+    for (let slotId = 1; slotId <= 2; slotId++) {
+        if (slots[slotId].isApostando && !slots[slotId].sacado) {
+            const ganhoPrevisto = slots[slotId].apostaAtual * multiplicador;
+            betPanels[slotId].btnSacar.textContent = `SACAR ${ganhoPrevisto.toFixed(2)}x`;
+        }
+    }
+}
+
+/**
+ * Finaliza a rodada por colapso.
+ */
+function endGame() {
+    gameRunning = false;
+    clearInterval(gameInterval);
+    playSound(crashSound);
+
+    // Efeitos Visuais de Colapso
+    multiDisplay.textContent = `${multiplicador.toFixed(2)}x`;
+    multiDisplay.className = 'status-crashed';
+
+    rocket.classList.add('rocket-crashed');
+    flame.classList.remove('flame-active');
+
+    // Atualiza o Histórico
+    if (multiplicador > 1.00) {
+        atualizarHistorico(multiplicador);
+    }
+
+    // Processa Perdas e Saques
+    for (let slotId = 1; slotId <= 2; slotId++) {
+        const slot = slots[slotId];
+
+        if (slot.isApostando) {
+            if (!slot.sacado) {
+                // PERDA
+                betPanels[slotId].statusMsg.innerHTML = `<span class="error">❌ PERDEU! Colapsou em ${multiplicador.toFixed(2)}x.</span>`;
+            } else {
+                // GANHO (Mensagem de saque mantida)
+                betPanels[slotId].statusMsg.innerHTML = `<span class="success">✅ SACADO em ${slot.sacadoMulti.toFixed(2)}x.</span>`;
+            }
+        }
+    }
+
+    // Agendamento para a próxima rodada: CHAMA A FASE DE APOSTA
+    msgDisplay.textContent = `COLAPSO em ${multiplicador.toFixed(2)}x! Fase de aposta iniciando...`;
+
+    setTimeout(() => {
+        startBettingPhase();
+    }, 4000);
+}
+
+// ----------------------------------------------------------------------
+// FUNÇÕES DE INTERAÇÃO DO USUÁRIO
+// ----------------------------------------------------------------------
+
+function apostar(slotId) {
+    const slot = slots[slotId];
+    const panel = betPanels[slotId];
+    let aposta = parseInt(panel.input.value);
+
+    if (!bettingPhase) {
+        panel.statusMsg.innerHTML = `<span class="warning">Aguarde a fase de aposta.</span>`;
+        return;
+    }
+
+    // 1. Validação
+    if (isNaN(aposta) || aposta < 1 || aposta > saldo) {
+        panel.statusMsg.innerHTML = `<span class="error">${aposta > saldo ? 'Saldo insuficiente!' : 'Aposta inválida.'}</span>`;
+        return;
+    }
+
+    // 2. Deduz o saldo
+    atualizarSaldo(saldo - aposta);
+
+    // 3. Configura a slot
+    slot.apostaAtual = aposta;
+    slot.isApostando = true;
+
+    // 4. Atualiza a UI
+    panel.btnApostar.disabled = true;
+    panel.btnApostar.textContent = 'APOSTADO!';
+    panel.input.disabled = true;
+    panel.statusMsg.textContent = 'APOSTADO! Aguardando o voo.';
+}
+
+
+function sacar(slotId) {
+    const slot = slots[slotId];
+    const panel = betPanels[slotId];
+
+    if (!slot.isApostando || slot.sacado || !gameRunning) return;
+
+    // 1. Processa o Ganho
+    const ganhoTotal = slot.apostaAtual * multiplicador;
+    atualizarSaldo(saldo + ganhoTotal);
+    const lucro = ganhoTotal - slot.apostaAtual;
+
+    // 2. Configura a Slot como Sacada
+    slot.sacado = true;
+    slot.sacadoMulti = multiplicador;
+
+    // 3. Atualiza a UI
+    panel.btnSacar.disabled = true;
+    panel.btnSacar.textContent = `SACADO!`;
+    panel.statusMsg.innerHTML = `<span class="success">🤑 Sacou ${lucro.toFixed(0)} créditos em ${multiplicador.toFixed(2)}x.</span>`;
+
+    playSound(winSound);
+
+    // O voo continua normalmente até colapsar, como nos jogos reais.
+}
+
+// ----------------------------------------------------------------------
+// 6. INICIALIZAÇÃO
+// ----------------------------------------------------------------------
+
 document.addEventListener('DOMContentLoaded', () => {
-    startBackgroundMusic();
-    updateUI();
-    startGameCycle(); // Inicia o primeiro ciclo de jogo imediatamente
+    // Carrega o saldo salvo ou usa o valor inicial de 1000
+    const savedSaldo = localStorage.getItem('rocketXSaldo');
+    atualizarSaldo(savedSaldo ? parseInt(savedSaldo) : 1000);
+
+    // Carrega o histórico salvo
+    const savedHistory = localStorage.getItem('rocketXHistory');
+    if (savedHistory) {
+        try { history = JSON.parse(savedHistory); } catch (e) { history = []; }
+    }
+    atualizarHistorico(1.00);
+
+    // Inicia a música e a primeira fase de aposta
+    startMusic();
+    setTimeout(() => startBettingPhase(), 1000);
 });
-
-
-// Funções globais para serem acessadas pelos botões HTML (onlick)
-window.apostar = apostar;
-window.sacar = sacar;
-window.ganharCreditosAnuncio = ganharCreditosAnuncio;
