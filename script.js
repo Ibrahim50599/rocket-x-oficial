@@ -1,5 +1,5 @@
 // ====================================================================
-// script.js - LÓGICA COMPLETA DO ROCKET X (COM CORREÇÃO DE ÁUDIO)
+// script.js - LÓGICA COMPLETA DO ROCKET X (FINALIZADA)
 // ====================================================================
 
 // --- 1. VARIÁVEIS GLOBAIS DE ESTADO ---
@@ -17,7 +17,7 @@ let timeRemaining = 0;
 let history = [];
 const MAX_HISTORY = 8;
 let simulatedPlayers = 0; // Simulação de jogadores apostando
-let musicStarted = false; // <<< ALTERAÇÃO 1: NOVA VARIÁVEL PARA O ÁUDIO
+let musicStarted = false; // VARIÁVEL PARA CONTROLE DO ÁUDIO
 
 // Estrutura para Gerenciar as Duas Apostas
 let slots = {
@@ -108,7 +108,7 @@ function atualizarHistorico(novoResultado) {
     localStorage.setItem('rocketXHistory', JSON.stringify(history));
 }
 
-// 💰 FUNÇÃO DE MONETIZAÇÃO (SIMULADA)
+// 💰 FUNÇÃO DE MONETIZAÇÃO (SIMULADA) - ESSENCIAL PARA RECARGA
 function ganharCreditosAnuncio() {
     if (gameRunning || bettingPhase) {
         msgDisplay.innerHTML = '<span class="error">Aguarde o ciclo de aposta/voo terminar.</span>';
@@ -331,7 +331,7 @@ function apostar(slotId) {
         return;
     }
     
-    // <<< ALTERAÇÃO 2: INICIA MÚSICA DE FUNDO NO PRIMEIRO CLIQUE >>>
+    // 🎵 INICIA MÚSICA DE FUNDO NO PRIMEIRO CLIQUE (Necessário para navegadores)
     if (!musicStarted) {
         startMusic();
         musicStarted = true;
@@ -393,7 +393,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     atualizarHistorico(1.00);
 
-    // <<< ALTERAÇÃO 3: REMOVE CHAMADA startMusic() PARA EVITAR BLOQUEIO >>>
-    // A música agora é iniciada no primeiro clique (apostar).
+    // Inicia a primeira fase de aposta (A música será iniciada no primeiro clique de aposta)
     setTimeout(() => startBettingPhase(), 1000);
 });
