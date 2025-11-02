@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rocket X - Professional (Design e Som Corrigidos)</title>
+    <title>Rocket X - Professional (Pronto para PWA)</title>
 
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+
     <style>
         /* style.css - Design de Alta Qualidade e Foguete Premium */
 
@@ -14,10 +15,10 @@
         body, html {
             margin: 0;
             padding: 0;
-            font-family: 'Montserrat', sans-serif; 
+            font-family: 'Montserrat', sans-serif;
             color: #fff;
             /* Fundo de espaço mais escuro e rico */
-            background: #000018; 
+            background: #000018;
             background-image: radial-gradient(circle at 100% 100%, #0d0d26 1px, transparent 1px),
                               radial-gradient(circle at 0% 0%, #0d0d26 1px, transparent 1px);
             background-size: 50px 50px;
@@ -44,27 +45,27 @@
 
         /* Contagem de Pessoas (Tráfego Simulado) - Mais vibrante */
         #players-count {
-            color: #00e5ff; 
+            color: #00e5ff;
             margin: 5px 0 15px 0;
             font-weight: 700;
             font-size: 1.1em;
             text-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
-            transition: color 0.3s; 
+            transition: color 0.3s;
         }
 
         /* 2. Área de Informações Superiores (GANHAR CRÉDITOS E ANÚNCIO) */
         .header-info {
             display: flex;
-            justify-content: center; 
+            justify-content: center;
             align-items: center;
             background: #0d0d26; /* Cor de fundo mais escura */
             padding: 12px 20px;
             border-radius: 15px;
             margin-top: 15px;
             /* Sombra 3D discreta */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.05); 
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.05);
         }
-        
+
         #ganhar-creditos {
             padding: 12px 20px;
             background-color: #ff6600; /* Laranja mais vivo */
@@ -83,7 +84,7 @@
             transform: translateY(-2px);
             box-shadow: 0 6px #a34100;
         }
-        
+
         #ganhar-creditos:active:not(:disabled) {
             transform: translateY(2px);
             box-shadow: 0 2px #a34100;
@@ -115,10 +116,10 @@
             list-style: none;
             padding: 0;
             display: flex;
-            flex-wrap: nowrap; 
-            justify-content: flex-start; 
+            flex-wrap: nowrap;
+            justify-content: flex-start;
             gap: 8px; /* Menor gap */
-            overflow-x: auto; 
+            overflow-x: auto;
             padding-bottom: 5px;
         }
 
@@ -136,94 +137,94 @@
         .history-low { background-color: #c0392b; box-shadow: 0 0 5px #c0392b; }
         .history-medium { background-color: #d35400; box-shadow: 0 0 5px #d35400; }
         .history-high { background-color: #27ae60; box-shadow: 0 0 5px #27ae60; }
-        .history-epic { 
-            background-color: #8e44ad; 
-            box-shadow: 0 0 10px #8e44ad, 0 0 20px rgba(142, 68, 173, 0.5); 
+        .history-epic {
+            background-color: #8e44ad;
+            box-shadow: 0 0 10px #8e44ad, 0 0 20px rgba(142, 68, 173, 0.5);
         }
 
 
         /* 4. Layout de Duas Apostas e Controles (Aprimorado) */
         .controls-grid {
-            display: flex; 
-            justify-content: center; 
-            gap: 20px; 
-            margin: 20px 0; 
-            flex-wrap: wrap; 
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
         }
-        
+
         .aposta-panel {
             background: #0d0d26;
-            padding: 15px; 
+            padding: 15px;
             border-radius: 15px;
             border: 1px solid #202040;
             text-align: center;
             /* Efeito de profundidade/neomorfismo mais acentuado */
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(255, 255, 255, 0.05);
-            max-width: 350px; 
-            width: 45%; 
-            min-width: 150px; 
+            max-width: 350px;
+            width: 45%;
+            min-width: 150px;
             transition: transform 0.2s;
         }
-        
+
         .aposta-panel:hover {
             transform: translateY(-2px);
         }
 
         .aposta-panel h3 {
             color: #00ffaa; /* Tom de verde mais suave */
-            margin: 0 0 8px 0; 
-            font-size: 1.1em; 
+            margin: 0 0 8px 0;
+            font-size: 1.1em;
             text-shadow: 0 0 3px #00ffaa;
         }
-        
+
         .bet-input-group {
             display: flex;
             gap: 8px;
-            margin-bottom: 8px; 
+            margin-bottom: 8px;
         }
-        
+
         .aposta-input {
-            width: 50%; 
-            padding: 10px; 
+            width: 50%;
+            padding: 10px;
             border: none;
             border-radius: 8px;
             background: #1a1a33; /* Fundo do input mais claro */
             color: #fff;
             text-align: center;
-            font-size: 1em; 
+            font-size: 1em;
             font-weight: 700;
             box-shadow: inset 0 1px 3px #000;
         }
 
         /* Feedback visual quando o input está desabilitado (apenas estético, a lógica o manterá habilitado) */
         .aposta-input:disabled {
-            background: #252540; 
-            color: #8a8a99; 
+            background: #252540;
+            color: #8a8a99;
             cursor: default;
         }
-        
+
         .bet-buttons {
             display: flex;
             gap: 8px;
-            width: 50%; 
+            width: 50%;
         }
-        
+
         /* Botões de Aposta/Sacar (Design 3D Aprimorado) */
         .btn-apostar, .btn-sacar {
-            flex-grow: 1; 
-            padding: 10px 5px; 
+            flex-grow: 1;
+            padding: 10px 5px;
             border: none;
-            border-radius: 8px; 
-            font-size: 0.9em; 
+            border-radius: 8px;
+            font-size: 0.9em;
             font-weight: 900;
             cursor: pointer;
             transition: background-color 0.2s, transform 0.1s, box-shadow 0.1s;
-            line-height: 1.2; 
+            line-height: 1.2;
         }
 
         .btn-apostar {
             background-color: #e74c3c; /* Vermelho vivo */
-            box-shadow: 0 4px #c0392b; 
+            box-shadow: 0 4px #c0392b;
         }
 
         .btn-apostar:active:not(:disabled) {
@@ -248,10 +249,10 @@
         }
 
         .status-message {
-            min-height: 20px; 
-            margin-top: 5px; 
+            min-height: 20px;
+            margin-top: 5px;
             font-weight: 700;
-            font-size: 0.9em; 
+            font-size: 0.9em;
         }
         .status-message .error { color: #ff5555; text-shadow: 0 0 3px #ff0000; }
         .status-message .success { color: #00ffaa; text-shadow: 0 0 3px #00ffaa; }
@@ -262,7 +263,7 @@
         #game-area {
             background: #0d0d26;
             border-radius: 20px;
-            padding: 10px 0; 
+            padding: 10px 0;
             /* Sombra profunda */
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 15px #202040;
             margin-bottom: 20px;
@@ -278,35 +279,35 @@
             top: 15px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 20; 
-            background: rgba(0, 0, 0, 0.8); 
+            z-index: 20;
+            background: rgba(0, 0, 0, 0.8);
             padding: 8px 15px;
             border-radius: 12px;
             border: 2px solid #00ffaa;
             box-shadow: 0 0 15px rgba(0, 255, 170, 0.7);
         }
         #saldo {
-            color: #00ffaa; 
-            font-size: 1.4em; 
+            color: #00ffaa;
+            font-size: 1.4em;
             margin: 0;
             font-weight: 900;
             white-space: nowrap;
             text-shadow: 0 0 5px #000;
         }
-        
+
 
         #multiplicador-display {
             font-size: 7em; /* Maior e mais impactante */
             font-weight: 900;
             position: relative;
             z-index: 10;
-            margin-top: 60px; 
+            margin-top: 60px;
             transition: color 0.3s, text-shadow 0.3s;
         }
-        
+
         /* ESTADOS DO MULTIPLICADOR (Cores NEON Aprimoradas) */
         .status-bet-ready {
-            color: #ffcc00 !important; 
+            color: #ffcc00 !important;
             text-shadow: 0 0 15px rgba(255, 204, 0, 0.8);
         }
 
@@ -344,7 +345,7 @@
             opacity: 0.1;
             animation: star-drift 60s linear infinite;
         }
-        
+
         @keyframes star-drift {
             from { background-position: 0 0; }
             to { background-position: 5000px 5000px; }
@@ -369,48 +370,48 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px; 
+            width: 100px;
             height: 100%;
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            pointer-events: none; 
+            pointer-events: none;
             z-index: 5;
         }
 
         #rocket {
-            width: 45px; 
+            width: 45px;
             height: 90px;
             position: absolute;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
             z-index: 5;
-            opacity: 1; 
+            opacity: 1;
             transition: opacity 0.5s ease-out, transform 0.5s linear;
-            
+
             /* Corpo do Foguete: Gradiente metálico aprimorado */
             background: linear-gradient(to top, #666 0%, #999 15%, #ccc 50%, #999 85%, #666 100%);
             border-radius: 50% 50% 10% 10%;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.4), inset 0 0 8px rgba(0,0,0,0.3);
             border: 2px solid #444;
-            position: relative; 
+            position: relative;
         }
 
         /* Ponta do Foguete (Cone) */
         #rocket::before {
             content: '';
             position: absolute;
-            top: -22px; 
+            top: -22px;
             left: 0;
             width: 0;
             height: 0;
-            border-left: 22.5px solid transparent; 
+            border-left: 22.5px solid transparent;
             border-right: 22.5px solid transparent;
-            border-bottom: 30px solid #ff4500; 
-            border-radius: 50%; 
+            border-bottom: 30px solid #ff4500;
+            border-radius: 50%;
             box-shadow: 0 3px 15px rgba(255, 69, 0, 0.7);
-            z-index: 6; 
+            z-index: 6;
         }
 
         /* Asas/Estabilizadores */
@@ -420,32 +421,32 @@
             bottom: 10px;
             width: 0;
             height: 0;
-            border-top: 35px solid transparent; 
+            border-top: 35px solid transparent;
             border-bottom: 0px solid transparent;
             background: linear-gradient(to right, #333, #555);
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.8);
-            z-index: 4; 
-            border-radius: 0 10px 0 0; 
+            z-index: 4;
+            border-radius: 0 10px 0 0;
         }
         .fin-left {
-            left: -30px; 
-            border-right: 30px solid #444; 
-            transform: skewY(5deg); 
+            left: -30px;
+            border-right: 30px solid #444;
+            transform: skewY(5deg);
         }
         .fin-right {
-            right: -30px; 
-            border-left: 30px solid #444; 
-            transform: skewY(-5deg); 
-            border-radius: 10px 0 0 0; 
+            right: -30px;
+            border-left: 30px solid #444;
+            transform: skewY(-5deg);
+            border-radius: 10px 0 0 0;
         }
 
 
         /* Bocal do Motor */
         .engine-nozzle {
             position: absolute;
-            bottom: -10px; 
-            width: 30px; 
-            height: 15px; 
+            bottom: -10px;
+            width: 30px;
+            height: 15px;
             background: linear-gradient(to top, #222 0%, #444 50%, #222 100%);
             border-radius: 50% 50% 0 0;
             box-shadow: inset 0 3px 8px rgba(0,0,0,0.4);
@@ -457,20 +458,20 @@
 
         /* Chama do Motor (Mais vibrante) */
         .flame {
-            width: 40px; 
-            height: 50px; 
+            width: 40px;
+            height: 50px;
             background: linear-gradient(to top, rgba(255,255,0,0.9) 0%, rgba(255,165,0,0.8) 40%, rgba(255,0,0,0.7) 80%, transparent 100%);
             border-radius: 50% 50% 30% 30%;
             position: absolute;
-            bottom: -50px; 
+            bottom: -50px;
             left: 50%;
-            transform: translateX(-50%) scaleY(0); 
-            box-shadow: 0 0 25px #ff8c00, 0 0 50px #ff0000; 
+            transform: translateX(-50%) scaleY(0);
+            box-shadow: 0 0 25px #ff8c00, 0 0 50px #ff0000;
             opacity: 0;
-            transition: transform 0.2s ease-out, opacity 0.2s ease-out; 
+            transition: transform 0.2s ease-out, opacity 0.2s ease-out;
             z-index: 2;
         }
-        
+
         @keyframes flame-pulse {
             0%, 100% { height: 50px; opacity: 1; }
             50% { height: 60px; opacity: 0.9; }
@@ -479,25 +480,25 @@
         .flame-active {
             animation: flame-pulse 0.2s infinite alternate;
             opacity: 1;
-            transform: translateX(-50%) scaleY(1); 
+            transform: translateX(-50%) scaleY(1);
         }
 
         /* Efeito de Colapso (explosão) */
         .rocket-crashed {
             opacity: 0 !important;
-            transform: translateX(-50%) scale(0.1) !important; 
-            transition: transform 0.1s ease-out, opacity 0.05s ease-out; 
+            transform: translateX(-50%) scale(0.1) !important;
+            transition: transform 0.1s ease-out, opacity 0.05s ease-out;
         }
 
         #explosion-effect {
             position: absolute;
-            top: 50%; 
+            top: 50%;
             left: 50%;
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: rgba(255, 69, 0, 1); 
-            box-shadow: 0 0 30px rgba(255, 140, 0, 0.9), 
+            background: rgba(255, 69, 0, 1);
+            box-shadow: 0 0 30px rgba(255, 140, 0, 0.9),
                         0 0 60px rgba(255, 69, 0, 0.7);
             opacity: 0;
             transform: translate(-50%, -50%) scale(0);
@@ -512,7 +513,7 @@
         }
 
         .active-explosion {
-            animation: explode 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards; 
+            animation: explode 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
         /* Detalhes do Foguete (Segmentos) */
@@ -520,7 +521,7 @@
             position: absolute;
             left: 5%;
             width: 90%;
-            height: 5px; 
+            height: 5px;
             background-color: #555;
             border-radius: 1px;
             box-shadow: inset 0 1px 2px rgba(0,0,0,0.4);
@@ -554,22 +555,22 @@
             <div id="saldo-display-container">
                 <h2 id="saldo">Capital: 1000 Créditos</h2>
             </div>
-            
-            <div class="stars" id="stars-bg"></div> 
+
+            <div class="stars" id="stars-bg"></div>
             <h2 id="multiplicador-display">1.00x</h2>
             <p id="message">Aguardando a fase de aposta...</p>
 
             <div id="foguete-animation-area">
                 <div id="rocket">
-                    <div class="segment"></div> 
-                    <div class="segment"></div> 
-                    <div class="segment"></div> 
-                    <div class="fin-left"></div> 
-                    <div class="fin-right"></div> 
-                    <div class="engine-nozzle"></div> 
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                    <div class="segment"></div>
+                    <div class="fin-left"></div>
+                    <div class="fin-right"></div>
+                    <div class="engine-nozzle"></div>
                     <div class="flame"></div>
                 </div>
-                <div id="explosion-effect"></div> 
+                <div id="explosion-effect"></div>
             </div>
         </div>
 
@@ -578,7 +579,7 @@
             <div class="aposta-panel" data-slot="1">
                 <h3>Aposta 1</h3>
                 <div class="bet-input-group">
-                    <input type="number" class="aposta-input" value="10" min="1" step="1" placeholder="Aposta"> 
+                    <input type="number" class="aposta-input" value="10" min="1" step="1" placeholder="Aposta">
                     <div class="bet-buttons">
                         <button class="btn-apostar" data-slot="1" onclick="apostar(1)">APOSTAR</button>
                         <button class="btn-sacar" data-slot="1" onclick="sacar(1)" disabled>SACAR</button>
@@ -590,7 +591,7 @@
             <div class="aposta-panel" data-slot="2">
                 <h3>Aposta 2</h3>
                  <div class="bet-input-group">
-                    <input type="number" class="aposta-input" value="5" min="1" step="1" placeholder="Aposta"> 
+                    <input type="number" class="aposta-input" value="5" min="1" step="1" placeholder="Aposta">
                     <div class="bet-buttons">
                         <button class="btn-apostar" data-slot="2" onclick="apostar(2)">APOSTAR</button>
                         <button class="btn-sacar" data-slot="2" onclick="sacar(2)" disabled>SACAR</button>
@@ -601,17 +602,17 @@
         </div>
 
         <hr style="border-color: #33334d;">
-        
+
         <div class="header-info">
             <button id="ganhar-creditos" onclick="ganharCreditosAnuncio()">
-                📺 Assistir Anúncio (+100 Combustível) 
+                📺 Assistir Anúncio (+100 Combustível)
             </button>
         </div>
 
         <div id="banner-ad-bottom" class="ad-placeholder">
             [Google AdMob Banner - Área BOTTOM]
         </div>
-        
+
         <p class="audio-alert" id="audio-warning" style="color: #ff4500; font-size: 0.9em; margin-top: 5px; text-shadow: 0 0 5px #ff4500;">
             🔊 Clique em qualquer botão ou área interativa para habilitar o som e a música.
         </p>
@@ -620,13 +621,13 @@
 
     <script>
         // ====================================================================
-        // script.js - LÓGICA COMPLETA DO ROCKET X (COM CORREÇÃO DE ÁUDIO)
+        // script.js - LÓGICA COMPLETA DO ROCKET X (COM CORREÇÃO DE ÁUDIO E PWA)
         // ====================================================================
 
         // --- 1. VARIÁVEIS GLOBAIS DE ESTADO ---
         let saldo = 1000;
-        const CREDITOS_POR_ANUNCIO = 100; 
-        const BETTING_TIME_MS = 6000; 
+        const CREDITOS_POR_ANUNCIO = 100;
+        const BETTING_TIME_MS = 6000;
 
         let multiplicador = 1.00;
         let crashPoint = 0;
@@ -636,18 +637,18 @@
         let bettingPhase = true;
         let timeRemaining = 0;
         let musicStarted = false;
-        let currentOnlineUsers = 500; 
+        let currentOnlineUsers = 500;
 
         let history = [];
         const MAX_HISTORY = 8;
-        
+
         let slots = {
             1: { apostaAtual: 0, sacado: false, sacadoMulti: 0, isApostando: false },
             2: { apostaAtual: 0, sacado: false, sacadoMulti: 0, isApostando: false }
         };
 
         // --- 2. REFERÊNCIAS DOM (HTML) ---
-        const saldoDisplay = document.getElementById('saldo'); 
+        const saldoDisplay = document.getElementById('saldo');
         const multiDisplay = document.getElementById('multiplicador-display');
         const msgDisplay = document.getElementById('message');
         const btnGanharCreditos = document.getElementById('ganhar-creditos');
@@ -655,7 +656,7 @@
         const flame = document.querySelector('#rocket .flame');
         const explosionEffect = document.getElementById('explosion-effect');
         const historyList = document.getElementById('history-list');
-        const playersCountDisplay = document.getElementById('players-count'); 
+        const playersCountDisplay = document.getElementById('players-count');
         const audioWarning = document.getElementById('audio-warning');
 
         const betPanels = [
@@ -685,7 +686,7 @@
             audioElement.currentTime = 0;
             audioElement.volume = 0.5;
             // O .catch é crucial para tratar o bloqueio de autoplay dos navegadores.
-            audioElement.play().catch(e => console.warn('Aviso: Áudio bloqueado ou não encontrado.', e)); 
+            audioElement.play().catch(e => console.warn('Aviso: Áudio bloqueado ou não encontrado.', e));
         }
 
         function startMusic() {
@@ -731,12 +732,12 @@
         function updateTrafficSimulation() {
             const variation = Math.floor(Math.random() * (currentOnlineUsers * 0.05));
             const change = Math.random() < 0.5 ? variation : -variation;
-            
-            currentOnlineUsers = Math.max(250, currentOnlineUsers + change); 
-            currentOnlineUsers = Math.min(1500, currentOnlineUsers); 
+
+            currentOnlineUsers = Math.max(250, currentOnlineUsers + change);
+            currentOnlineUsers = Math.min(1500, currentOnlineUsers);
 
             let statusText = `👥 ${currentOnlineUsers} Usuários Online`;
-            
+
             if (bettingPhase) {
                 statusText += ` (Lançamento em ${timeRemaining}s)`;
             } else if (gameRunning) {
@@ -809,10 +810,10 @@
 
                 betPanels[slotId].btnApostar.disabled = false;
                 betPanels[slotId].btnSacar.disabled = true;
-                
+
                 // INPUT PERMANECE HABILITADO
-                betPanels[slotId].input.disabled = false; 
-                
+                betPanels[slotId].input.disabled = false;
+
                 betPanels[slotId].statusMsg.textContent = 'PRONTO';
                 betPanels[slotId].btnApostar.textContent = 'APOSTAR';
             }
@@ -825,12 +826,12 @@
             explosionEffect.classList.remove('active-explosion');
 
             gameInterval = setInterval(updateBettingPhase, 1000);
-            updateTrafficSimulation(); 
+            updateTrafficSimulation();
         }
 
         function updateBettingPhase() {
-            updateTrafficSimulation(); 
-            
+            updateTrafficSimulation();
+
             if (timeRemaining <= 0) {
                 clearInterval(gameInterval);
                 msgDisplay.textContent = 'APOSTAS FECHADAS! Foguete decolando...';
@@ -840,7 +841,7 @@
                     betPanels[slotId].btnApostar.disabled = true;
                     // O input permanece HABILITADO
                 }
-                
+
                 setTimeout(() => iniciarRodada(), 1000);
 
             } else {
@@ -865,7 +866,7 @@
                     betPanels[slotId].btnSacar.disabled = false;
                     betPanels[slotId].statusMsg.textContent = 'VOANDO...';
                 }
-                
+
                 // O input é mantido HABILITADO
             }
 
@@ -881,8 +882,8 @@
             multiplicador = parseFloat(multiplicador.toFixed(2));
 
             multiDisplay.textContent = `${multiplicador.toFixed(2)}x`;
-            
-            updateTrafficSimulation(); 
+
+            updateTrafficSimulation();
 
             const max_height_px = 350;
             let current_height = Math.min(max_height_px, (multiplicador - 1.0) * 35);
@@ -891,7 +892,7 @@
             rocket.style.transform = `translateX(-50%) translateY(-${current_height}px) scale(1)`;
 
             const rocketHeight = rocket.clientHeight;
-            explosionEffect.style.bottom = `${current_height + (rocketHeight / 2) - 10}px`; 
+            explosionEffect.style.bottom = `${current_height + (rocketHeight / 2) - 10}px`;
 
             if (multiplicador >= crashPoint) {
                 endGame(current_height);
@@ -915,15 +916,15 @@
             multiDisplay.className = 'status-crashed';
 
             explosionEffect.classList.add('active-explosion');
-            
+
             rocket.classList.add('rocket-crashed');
             flame.classList.remove('flame-active');
 
             if (multiplicador > 1.00) {
                 atualizarHistorico(multiplicador);
             }
-            
-            updateTrafficSimulation(); 
+
+            updateTrafficSimulation();
 
             for (let slotId = 1; slotId <= 2; slotId++) {
                 const slot = slots[slotId];
@@ -955,7 +956,7 @@
                 betPanels[slotId].statusMsg.innerHTML = `<span class="warning">Aguarde a fase de aposta.</span>`;
                 return;
             }
-            
+
             const aposta = validateBetInput(slotId);
             if (aposta === false) return;
 
@@ -969,11 +970,11 @@
 
             panel.btnApostar.disabled = true;
             panel.btnApostar.textContent = 'FEITO!';
-            panel.btnSacar.textContent = 'SACAR'; 
-            
+            panel.btnSacar.textContent = 'SACAR';
+
             panel.statusMsg.textContent = 'APOSTADO! Aguardando o voo.';
-            
-            updateTrafficSimulation(); 
+
+            updateTrafficSimulation();
         }
 
 
@@ -996,8 +997,8 @@
             panel.btnSacar.textContent = `SACADO!`;
             panel.statusMsg.innerHTML = `<span class="success">🤑 Sacou +${lucro.toFixed(0)} em ${multiplicador.toFixed(2)}x.</span>`;
 
-            playSound(winSound); 
-            updateTrafficSimulation(); 
+            playSound(winSound);
+            updateTrafficSimulation();
         }
 
         function ganharCreditosAnuncio() {
@@ -1009,21 +1010,21 @@
             }
 
             btnGanharCreditos.disabled = true;
-            
+
             const originalButtonText = btnGanharCreditos.textContent;
             btnGanharCreditos.textContent = '📺 Exibindo... (5s)';
-            
+
             msgDisplay.innerHTML = '<span class="warning">Processando Anúncio Recompensado...</span>';
 
             setTimeout(() => {
                 atualizarSaldo(saldo + CREDITOS_POR_ANUNCIO);
-                
+
                 msgDisplay.innerHTML = `<span class="success">🥳 Sucesso! Você recebeu ${CREDITOS_POR_ANUNCIO} créditos de Combustível.</span>`;
-                
+
                 btnGanharCreditos.disabled = false;
-                btnGanharCreditos.textContent = originalButtonText; 
-                
-                playSound(winSound); 
+                btnGanharCreditos.textContent = originalButtonText;
+
+                playSound(winSound);
             }, 5000);
         }
 
@@ -1039,12 +1040,25 @@
             if (savedHistory) {
                 try { history = JSON.parse(savedHistory); } catch (e) { history = []; }
             }
-            atualizarHistorico(1.00); 
+            atualizarHistorico(1.00);
 
             trafficInterval = setInterval(updateTrafficSimulation, 5000);
 
             setTimeout(() => startBettingPhase(), 1000);
         });
+
+        // ----------------------------------------------------------------------
+        // 7. REGISTRO DO SERVICE WORKER (Para funcionalidade PWA)
+        // ----------------------------------------------------------------------
+        // ESSENCIAL: Permite que o site seja instalado como um APP
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // O caminho para o service worker deve ser './sw.js'
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker Registrado com sucesso:', reg.scope))
+                    .catch(err => console.error('Falha ao registrar Service Worker:', err));
+            });
+        }
     </script>
 </body>
 </html>
