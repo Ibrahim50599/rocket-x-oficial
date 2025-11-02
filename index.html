@@ -15,7 +15,7 @@
         body, html {
             margin: 0;
             padding: 0;
-            font-family: 'Montserrat', sans-serif; /* Fonte mais moderna */
+            font-family: 'Montserrat', sans-serif; 
             color: #fff;
             /* Fundo de espaço mais detalhado */
             background: #0a0a1a;
@@ -25,7 +25,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            /* 💥 CORREÇÃO PRINCIPAL: Permite a rolagem vertical, mas esconde a horizontal. */
+            /* CORREÇÃO PRINCIPAL: Permite a rolagem vertical. */
             overflow-x: hidden; 
         }
 
@@ -39,14 +39,14 @@
         }
 
         h1 {
-            color: #ff9900; /* Laranja Metálico */
+            color: #ff9900; 
             font-size: 2.2em;
             margin-bottom: 5px;
             text-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
         }
 
         #players-count {
-            color: #00e5ff; /* Ciano Neon */
+            color: #00e5ff; 
             margin: 5px 0 15px 0;
             font-weight: bold;
         }
@@ -64,13 +64,13 @@
         }
 
         #saldo {
-            color: #00ff88; /* Verde Sucesso */
+            color: #00ff88; 
             font-size: 1.5em;
         }
 
         #ganhar-creditos {
             padding: 10px 15px;
-            background-color: #ff4500; /* Laranja forte */
+            background-color: #ff4500; 
             color: #fff;
             border: none;
             border-radius: 8px;
@@ -175,7 +175,7 @@
         }
 
         .btn-apostar {
-            background-color: #ff4500; /* Laranja forte */
+            background-color: #ff4500; 
             box-shadow: 0 4px #cc3700;
         }
 
@@ -185,7 +185,7 @@
         }
 
         .btn-sacar {
-            background-color: #00cc66; /* Verde de sucesso */
+            background-color: #00cc66; 
             box-shadow: 0 4px #00a352;
         }
 
@@ -234,7 +234,7 @@
         }
 
         .status-bet-ready {
-            color: #ff9900 !important; /* Laranja de espera */
+            color: #ff9900 !important; 
             text-shadow: 0 0 10px rgba(255, 153, 0, 0.8);
         }
 
@@ -273,11 +273,11 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            pointer-events: none; /* Não interfere no clique */
+            pointer-events: none; 
         }
 
         #rocket {
-            width: 40px; /* Maior */
+            width: 40px; 
             height: 80px;
             background-color: #cccccc;
             background: linear-gradient(to top, #999 0%, #ccc 50%, #eee 100%);
@@ -286,10 +286,10 @@
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Brilho metálico */
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); 
             z-index: 5;
-            opacity: 0;
-            transition: opacity 0.5s ease-out;
+            opacity: 0; /* Começa invisível */
+            transition: opacity 0.5s ease-out, transform 0.1s linear;
             border: 1px solid #777;
         }
 
@@ -303,7 +303,7 @@
             height: 0;
             border-left: 20px solid transparent;
             border-right: 20px solid transparent;
-            border-bottom: 30px solid #ff0055; /* Ponta Vermelho Cromo */
+            border-bottom: 30px solid #ff0055; 
             border-radius: 50%;
         }
 
@@ -312,7 +312,7 @@
             content: '';
             position: absolute;
             bottom: 0;
-            left: -20px; /* Mais largas */
+            left: -20px; 
             width: 0;
             height: 0;
             border-top: 40px solid transparent;
@@ -323,7 +323,7 @@
         }
 
         .flame {
-            width: 25px; /* Chama maior e mais intensa */
+            width: 25px; 
             height: 40px;
             background-color: #ffaa00;
             border-radius: 50% 50% 30% 30%;
@@ -331,7 +331,7 @@
             bottom: -35px;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 0 20px #ff6600, 0 0 40px #ff0000; /* Brilho de fogo */
+            box-shadow: 0 0 20px #ff6600, 0 0 40px #ff0000; 
             opacity: 0;
         }
 
@@ -347,7 +347,7 @@
             opacity: 1;
         }
 
-        /* Animação de Voo (A ser definida por JS) */
+        /* Animação de Voo (Tornado visível pelo JS) */
         .rocket-flying {
             opacity: 1 !important;
         }
@@ -355,7 +355,7 @@
         /* Efeito de Colapso (explosão) */
         .rocket-crashed {
             opacity: 0 !important;
-            transform: translateX(-50%) scale(0.1) !important; /* Desaparece com explosão */
+            transform: translateX(-50%) scale(0.1) !important; 
             transition: transform 0.2s ease-out, opacity 0.1s ease-out;
         }
     </style>
@@ -381,6 +381,7 @@
                 📺 Assistir Anúncio (+20 Combustível)
             </button>
         </div>
+
         <div id="history-container">
             <h3>Colapsos Anteriores:</h3>
             <ul id="history-list"></ul>
@@ -398,6 +399,7 @@
 
             <p id="message">Aguardando a fase de aposta...</p>
         </div>
+
         <div class="controls-grid">
 
             <div class="aposta-panel" data-slot="1">
