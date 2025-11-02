@@ -1,11 +1,12 @@
 // ====================================================================
 // script.js - LÓGICA COMPLETA E PROFISSIONAL DO ROCKET X
+// (Parte 2: Integração de Áudio Dinâmico e Parallax Aprimorado)
 // ====================================================================
 
 // --- 1. VARIÁVEIS GLOBAIS DE ESTADO ---
 let saldo = 1000;
 const CREDITOS_POR_ANUNCIO = 20;
-const CREDITOS_BONUS_DIARIO = 50; // NOVO: Valor do Bônus Diário
+const CREDITOS_BONUS_DIARIO = 50;
 const BETTING_TIME_MS = 6000; // Tempo de aposta de 6 segundos
 
 let multiplicador = 1.00;
@@ -43,7 +44,10 @@ const msgDisplay = document.getElementById('message');
 const btnGanharCreditos = document.getElementById('ganhar-creditos');
 const rocket = document.getElementById('rocket');
 const flame = document.querySelector('#rocket .flame');
-const starsBg = document.getElementById('stars-bg'); // NOVO: Fundo de estrelas
+// REFERÊNCIAS PARA AS NOVAS CAMADAS DE ESTRELAS
+const starsLayer1 = document.getElementById('stars-layer-1');
+const starsLayer2 = document.getElementById('stars-layer-2');
+const starsLayer3 = document.getElementById('stars-layer-3');
 const historyList = document.getElementById('history-list');
 const playersCountDisplay = document.getElementById('players-count');
 
@@ -64,22 +68,33 @@ const betPanels = [
     }
 ];
 
-// --- 3. REFERÊNCIAS DE ÁUDIO ---
+// --- 3. REFERÊNCIAS DE ÁUDIO (WEBAUDIO API DINÂMICA) ---
 const crashSound = document.getElementById('crash-sound');
 const winSound = document.getElementById('win-sound');
 const bgMusic = document.getElementById('background-music');
 
+// Web Audio API para Som Dinâmico do Foguete
+const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+let rocketNoise = null;
+let rocketGain = null;
+let rocketFilter = null;
+// --------------------------------------------------------
+
 // --- 4. FUNÇÕES AUXILIARES ---
 
 function playSound(audioElement) {
+    // Tenta resumir o contexto no primeiro clique de áudio para iOS/Chrome Mobile
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
     audioElement.currentTime = 0;
     audioElement.volume = 0.5;
-    audioElement.play().catch(e => console.warn('Aviso: Áudio bloqueado.'));
+    audioElement.play().catch(e => console.warn('Aviso: Áudio bloqueado ou erro ao tocar.'));
 }
 
 function startMusic() {
     bgMusic.volume = 0.3;
-    bgMusic.play().catch(e => console.warn('Aviso: Música de fundo bloqueada.'));
+    playSound(bgMusic); // Reutiliza a função playSound para garantir o resume
 }
 
 function atualizarSaldo(valor) {
@@ -130,18 +145,15 @@ function ganharCreditosAnuncio() {
     }, 5000);
 }
 
-// 🎁 FUNÇÕES DE BÔNUS DIÁRIO (NOVO)
-
+// 🎁 FUNÇÕES DE BÔNUS DIÁRIO
 function verificarEaplicarBonusDiario() {
     const ultimaRecargaTimestamp = localStorage.getItem('rocketXDailyBonusTime');
     const agora = Date.now();
     const VINTE_QUATRO_HORAS_MS = 24 * 60 * 60 * 1000;
 
-    // Se nunca recebeu, ou se já passaram 24h
     if (!ultimaRecargaTimestamp || (agora - parseInt(ultimaRecargaTimestamp) >= VINTE_QUATRO_HORAS_MS)) {
         aplicarBonusDiario();
     }
-    // Caso contrário, não faz nada e o jogo inicia normalmente.
 }
 
 function aplicarBonusDiario() {
@@ -149,6 +161,77 @@ function aplicarBonusDiario() {
     localStorage.setItem('rocketXDailyBonusTime', Date.now()); // Salva o tempo atual
 
     alert(`🎉 BÔNUS DIÁRIO! Você recebeu ${CREDITOS_BONUS_DIARIO} créditos!`);
+}
+
+// ---------------------------------------------------------
+// NOVO: GERAÇÃO E CONTROLE DO RUÍDO DO FOGUETE (WEBAUDIO API)
+// ---------------------------------------------------------
+
+function startRocketThrustSound() {
+    if (rocketNoise) return;
+
+    // 1. Cria o Buffer de Ruído (White Noise)
+    const bufferSize = audioContext.sampleRate * 1.5;
+    const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+    const output = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+        output[i] = Math.random() * 2 - 1;
+    }
+
+    // 2. Cria as fontes e nós
+    rocketNoise = audioContext.createBufferSource();
+    rocketNoise.buffer = buffer;
+    rocketNoise.loop = true;
+    
+    rocketFilter = audioContext.createBiquadFilter(); 
+    rocketFilter.type = 'bandpass';
+    rocketFilter.frequency.value = 100;
+    
+    rocketGain = audioContext.createGain(); 
+    rocketGain.gain.setValueAtTime(0, audioContext.currentTime);
+
+    // 3. Conecta os nós: Ruído -> Filtro -> Ganho -> Destino
+    rocketNoise.connect(rocketFilter);
+    rocketFilter.connect(rocketGain);
+    rocketGain.connect(audioContext.destination);
+
+    // 4. Inicia o som com um Fade-In suave
+    rocketNoise.start();
+    // Inicia o volume em 0.4 e sobe para o primeiro impulso em 1.5s
+    rocketGain.gain.linearRampToValueAtTime(0.4, audioContext.currentTime + 1.5); 
+}
+
+function updateRocketThrustSound(multi) {
+    if (!rocketGain || !rocketFilter) return;
+
+    // Aumenta o volume e a frequência do filtro (pitch/cor do som) à medida que o multi sobe
+    // A intensidade é calculada para ser perceptível e emocionante
+    const intensity = Math.min(1, (multi - 1.0) / 10); // Limita a intensidade em 10x
+    
+    // Volume (começa em 0.4, vai até 0.8)
+    rocketGain.gain.setValueAtTime(0.4 + intensity * 0.4, audioContext.currentTime);
+
+    // Frequência do filtro (muda o pitch do ruído, de 100Hz para 4000Hz)
+    const newFrequency = 100 + intensity * 3900;
+    rocketFilter.frequency.linearRampToValueAtTime(newFrequency, audioContext.currentTime + 0.1);
+}
+
+function stopRocketThrustSound() {
+    if (rocketNoise) {
+        // Fade-out rápido
+        rocketGain.gain.linearRampToValueAtTime(0, audioContext.currentTime + 0.5);
+        
+        // Para o buffer source (o som) após o fade-out
+        setTimeout(() => {
+            if (rocketNoise) {
+                rocketNoise.stop();
+                rocketNoise.disconnect();
+                rocketNoise = null;
+                rocketGain = null;
+                rocketFilter = null;
+            }
+        }, 500);
+    }
 }
 
 
@@ -175,10 +258,16 @@ function startBettingPhase() {
 
     // Reseta Animação do Foguete
     rocket.style.transition = 'none';
+    rocket.style.setProperty('--rocket-y', '0px'); // Reseta a variável CSS de altura
     rocket.style.transform = 'translateX(-50%) translateY(0)';
     rocket.classList.remove('rocket-crashed', 'rocket-flying');
     flame.classList.remove('flame-active');
-    starsBg.style.transform = 'translateY(0)'; // Reseta fundo
+
+    // Reseta o Parallax das Estrelas
+    starsLayer1.style.transform = 'translateY(0)';
+    starsLayer2.style.transform = 'translateY(0)';
+    starsLayer3.style.transform = 'translateY(0)';
+
 
     simulatedPlayers = Math.floor(Math.random() * 101) + 50;
 
@@ -216,12 +305,13 @@ function iniciarRodada() {
     multiDisplay.textContent = '1.00x';
     multiDisplay.className = 'status-flying';
 
-    // Gera crash point mais realista
+    // Lógica aprimorada de crash point: 
+    // Maior chance de cair baixo (85% para < 4.0x) e 15% de chance de subir alto
     let r = Math.random();
-    if (r < 0.8) {
+    if (r < 0.85) {
         crashPoint = parseFloat((Math.random() * 3 + 1.05).toFixed(2));
     } else {
-        crashPoint = parseFloat((Math.random() * 6 + 4.0).toFixed(2));
+        crashPoint = parseFloat((Math.random() * 10 + 4.0).toFixed(2));
     }
 
     // Ativa SACAR para slots ativas
@@ -235,36 +325,55 @@ function iniciarRodada() {
     // Inicia Animação do Foguete e Fundo
     rocket.classList.add('rocket-flying');
     flame.classList.add('flame-active');
+    
+    // NOVO: Inicia o som do impulso dinâmico
+    startRocketThrustSound();
 
-    gameInterval = setInterval(updateGame, 100);
+    gameInterval = setInterval(updateGame, 50); // Loop mais rápido para animação super suave
 }
 
 function updateGame() {
     if (!gameRunning) return;
 
-    // Lógica de Crescimento
-    multiplicador += 0.01 + (multiplicador / 700);
+    // Lógica de Crescimento (mais suave e rápido)
+    multiplicador += 0.01 + (multiplicador / 500); // Crescimento um pouco mais acelerado
     multiplicador = parseFloat(multiplicador.toFixed(2));
 
     multiDisplay.textContent = `${multiplicador.toFixed(2)}x`;
+    
+    // NOVO: Atualiza a intensidade do som
+    updateRocketThrustSound(multiplicador);
 
     // --- ANIMAÇÃO PROFISSIONAL: Foguete e Parallax ---
     const gameAreaHeight = document.getElementById('game-area').offsetHeight;
-    const max_travel = gameAreaHeight / 2; // Máximo que o foguete sobe visualmente
+    const max_travel = gameAreaHeight / 2.5; // Máximo que o foguete sobe visualmente
 
-    // Calcula a Posição Y (baseado no multiplicador)
-    let rocketY = Math.min(max_travel, (multiplicador - 1.0) * 40);
+    // Calcula a Posição Y (baseado no multiplicador - curva logarítmica para suavizar no início)
+    // Usa Math.log para que o movimento seja mais lento no início e mais rápido depois
+    let rocketY = Math.min(max_travel, (Math.log(multiplicador) * max_travel / Math.log(10)));
+    if (multiplicador > 10) { // Garante que continue subindo lentamente após 10x
+        rocketY = max_travel;
+    }
+
 
     // Efeito de tremer (shake)
-    const shake = Math.sin(Date.now() / 50) * 0.5;
+    // O tremor aumenta com o multiplicador para simular a intensidade
+    const shakeIntensity = Math.min(3, (multiplicador - 1.0) / 2); // Max 3px de shake
+    const shakeX = Math.sin(Date.now() / 50) * shakeIntensity;
+    const shakeY = Math.cos(Date.now() / 60) * shakeIntensity;
 
-    // Aplica Animação ao Foguete
-    rocket.style.transition = 'transform 0.1s linear';
-    rocket.style.transform = `translateX(calc(-50% + ${shake}px)) translateY(-${rocketY}px)`;
 
-    // Efeito Parallax nas Estrelas
-    let parallaxY = rocketY * 2; 
-    starsBg.style.transform = `translateY(${parallaxY}px)`;
+    // Aplica Animação ao Foguete usando variáveis CSS (para a animação de explosão)
+    rocket.style.setProperty('--rocket-y', rocketY + 'px');
+    rocket.style.setProperty('--shake-x', shakeX + 'px');
+
+    rocket.style.transform = `translateX(calc(-50% + ${shakeX}px)) translateY(-${rocketY}px)`;
+
+
+    // Efeito Parallax nas Estrelas (velocidades diferentes para profundidade)
+    starsLayer1.style.transform = `translateY(${rocketY * 0.8}px)`; // Mais devagar
+    starsLayer2.style.transform = `translateY(${rocketY * 1.5}px)`; // Médio
+    starsLayer3.style.transform = `translateY(${rocketY * 2.5}px)`; // Mais rápido
     // ---------------------------------------------------
 
 
@@ -278,7 +387,8 @@ function updateGame() {
     for (let slotId = 1; slotId <= 2; slotId++) {
         if (slots[slotId].isApostando && !slots[slotId].sacado) {
             const ganhoPrevisto = slots[slotId].apostaAtual * multiplicador;
-            betPanels[slotId].btnSacar.textContent = `SACAR ${ganhoPrevisto.toFixed(2)}x`;
+            // Mostra o ganho total (aposta + lucro)
+            betPanels[slotId].btnSacar.textContent = `SACAR ${ganhoPrevisto.toFixed(2)}`; 
         }
     }
 }
@@ -286,18 +396,24 @@ function updateGame() {
 function endGame() {
     gameRunning = false;
     clearInterval(gameInterval);
+    
+    // NOVO: Para o som do impulso dinâmico
+    stopRocketThrustSound();
+
     playSound(crashSound);
 
     // Efeitos Visuais de Colapso
     multiDisplay.textContent = `${multiplicador.toFixed(2)}x`;
     multiDisplay.className = 'status-crashed';
 
-    // Foguete some com a explosão
+    // Foguete desaparece com a explosão (CSS keyframes)
     rocket.classList.add('rocket-crashed'); 
     flame.classList.remove('flame-active');
     
-    // Para o movimento de fundo
-    starsBg.style.transition = 'none';
+    // Para o movimento de fundo (remove a transição suave das estrelas)
+    starsLayer1.style.transition = 'none';
+    starsLayer2.style.transition = 'none';
+    starsLayer3.style.transition = 'none';
 
     // Atualiza o Histórico
     if (multiplicador > 1.00) {
@@ -310,8 +426,10 @@ function endGame() {
 
         if (slot.isApostando) {
             if (!slot.sacado) {
+                // Perdeu, o saldo já foi deduzido na aposta
                 betPanels[slotId].statusMsg.innerHTML = `<span class="error">❌ PERDEU! Colapsou em ${multiplicador.toFixed(2)}x.</span>`;
             } else {
+                // Sacou, já atualizado no sacar()
                 betPanels[slotId].statusMsg.innerHTML = `<span class="success">✅ SACADO em ${slot.sacadoMulti.toFixed(2)}x.</span>`;
             }
         }
@@ -321,6 +439,11 @@ function endGame() {
     msgDisplay.textContent = `COLAPSO em ${multiplicador.toFixed(2)}x! Fase de aposta iniciando...`;
 
     setTimeout(() => {
+        // Volta a transição suave das estrelas para o próximo voo
+        starsLayer1.style.transition = 'transform 0.1s linear';
+        starsLayer2.style.transition = 'transform 0.1s linear';
+        starsLayer3.style.transition = 'transform 0.1s linear';
+        
         startBettingPhase();
     }, 4000);
 }
@@ -340,8 +463,20 @@ function apostar(slotId) {
     }
 
     // 1. Validação
-    if (isNaN(aposta) || aposta < 1 || aposta > saldo) {
-        panel.statusMsg.innerHTML = `<span class="error">${aposta > saldo ? 'Saldo insuficiente!' : 'Aposta inválida.'}</span>`;
+    if (isNaN(aposta) || aposta < 1) {
+        panel.statusMsg.innerHTML = `<span class="error">Aposta inválida.</span>`;
+        return;
+    }
+    
+    // Calcula o total já apostado nas duas slots
+    const totalApostado = slots[1].isApostando ? slots[1].apostaAtual : 0;
+    const apostaAtualOutroSlot = slots[2].isApostando ? slots[2].apostaAtual : 0;
+    
+    // Saldo restante após outras apostas
+    const saldoRestante = saldo - totalApostado - apostaAtualOutroSlot;
+
+    if (aposta > saldoRestante) {
+        panel.statusMsg.innerHTML = `<span class="error">Saldo insuficiente! Você só tem ${saldoRestante} restantes.</span>`;
         return;
     }
     
@@ -351,7 +486,7 @@ function apostar(slotId) {
         musicStarted = true;
     }
     
-    // 2. Deduz o saldo
+    // 2. Deduz o saldo (apenas o valor da aposta atual)
     atualizarSaldo(saldo - aposta);
 
     // 3. Configura a slot
@@ -380,8 +515,8 @@ function sacar(slotId) {
     slot.sacadoMulti = multiplicador;
 
     panel.btnSacar.disabled = true;
-    panel.btnSacar.textContent = `SACADO!`;
-    panel.statusMsg.innerHTML = `<span class="success">🤑 Sacou ${lucro.toFixed(0)} créditos em ${multiplicador.toFixed(2)}x.</span>`;
+    panel.btnSacar.textContent = `✅ ${multiplicador.toFixed(2)}x`;
+    panel.statusMsg.innerHTML = `<span class="success">🤑 Ganho: +${lucro.toFixed(0)} créditos!</span>`;
 
     playSound(winSound);
 }
