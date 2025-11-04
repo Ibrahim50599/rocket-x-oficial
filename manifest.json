@@ -1,7 +1,7 @@
 {
-  "name": "Rocket X - Jogo Oficial",
-  "short_name": "Rocket X",
-  "description": "Simulador de jogo Crash (Foguete) em HTML5.",
+  "name": "Rocket X - Simulador de Probabilidade",
+  "short_name": "Rocket X Teste",
+  "description": "Simulador educativo e de probabilidade com foco em testes de multiplicador.",
   "start_url": "./index.html",
   "scope": ".",
   "display": "standalone",
