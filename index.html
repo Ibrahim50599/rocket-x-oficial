@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rocket X - Professional (Pronto para PWA)</title>
+    <title>Rocket X - Simulador de Probabilidade</title>
 
     <link rel="manifest" href="manifest.json">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
@@ -66,7 +66,7 @@
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.05);
         }
 
-        #ganhar-creditos {
+        #ganhar-unidades {
             padding: 12px 20px;
             background-color: #ff6600; /* Laranja mais vivo */
             color: #fff;
@@ -79,13 +79,13 @@
             font-size: 1em;
         }
 
-        #ganhar-creditos:hover {
+        #ganhar-unidades:hover {
             background-color: #cc5200;
             transform: translateY(-2px);
             box-shadow: 0 6px #a34100;
         }
 
-        #ganhar-creditos:active:not(:disabled) {
+        #ganhar-unidades:active:not(:disabled) {
             transform: translateY(2px);
             box-shadow: 0 2px #a34100;
         }
@@ -103,7 +103,7 @@
         }
 
 
-        /* 3. Histórico de Colapsos - Layout e Cores Mais Definidas */
+        /* 3. Histórico de Multiplicadores - Layout e Cores Mais Definidas */
         #history-container {
             background: #0d0d26;
             padding: 10px 15px;
@@ -143,7 +143,7 @@
         }
 
 
-        /* 4. Layout de Duas Apostas e Controles (Aprimorado) */
+        /* 4. Layout de Duas Tentativas e Controles (Aprimorado) */
         .controls-grid {
             display: flex;
             justify-content: center;
@@ -286,7 +286,7 @@
             border: 2px solid #00ffaa;
             box-shadow: 0 0 15px rgba(0, 255, 170, 0.7);
         }
-        #saldo {
+        #capital {
             color: #00ffaa;
             font-size: 1.4em;
             margin: 0;
@@ -483,7 +483,7 @@
             transform: translateX(-50%) scaleY(1);
         }
 
-        /* Efeito de Colapso (explosão) */
+        /* Efeito de Interrupção (explosão) */
         .rocket-crashed {
             opacity: 0 !important;
             transform: translateX(-50%) scale(0.1) !important;
@@ -538,27 +538,27 @@
     <audio id="background-music" src="background.mp3" loop preload="auto"></audio>
 
     <div id="app">
-        <h1>🚀 Rocket X - Ganho Rápido</h1>
+        <h1>🚀 Rocket X - Teste de Probabilidade</h1>
 
-        <h3 id="players-count">👥 0 Usuários Online...</h3>
+        <h3 id="players-count">👥 0 Testadores Online...</h3>
 
         <div id="banner-ad-top" class="ad-placeholder">
             [Google AdMob Banner - Área TOP]
         </div>
 
         <div id="history-container">
-            <h3>📈 Colapsos Anteriores:</h3>
+            <h3>📈 Histórico de Multiplicadores:</h3>
             <ul id="history-list"></ul>
         </div>
 
         <div id="game-area">
             <div id="saldo-display-container">
-                <h2 id="saldo">Capital: 1000 Créditos</h2>
+                <h2 id="capital">Capital: 1000 Unidades</h2>
             </div>
 
             <div class="stars" id="stars-bg"></div>
             <h2 id="multiplicador-display">1.00x</h2>
-            <p id="message">Aguardando a fase de aposta...</p>
+            <p id="message">Aguardando a fase de preparação do teste...</p>
 
             <div id="foguete-animation-area">
                 <div id="rocket">
@@ -577,24 +577,24 @@
         <div class="controls-grid">
 
             <div class="aposta-panel" data-slot="1">
-                <h3>Aposta 1</h3>
+                <h3>Teste 1</h3>
                 <div class="bet-input-group">
-                    <input type="number" class="aposta-input" value="10" min="1" step="1" placeholder="Aposta">
+                    <input type="number" class="aposta-input" value="10" min="1" step="1" placeholder="Unidades">
                     <div class="bet-buttons">
-                        <button class="btn-apostar" data-slot="1" onclick="apostar(1)">APOSTAR</button>
-                        <button class="btn-sacar" data-slot="1" onclick="sacar(1)" disabled>SACAR</button>
+                        <button class="btn-apostar" data-slot="1" onclick="iniciarTeste(1)">INICIAR TESTE</button>
+                        <button class="btn-sacar" data-slot="1" onclick="salvarPonto(1)" disabled>SALVAR PONTO</button>
                     </div>
                 </div>
                 <p class="status-message" id="status-1">PRONTO</p>
             </div>
 
             <div class="aposta-panel" data-slot="2">
-                <h3>Aposta 2</h3>
+                <h3>Teste 2</h3>
                  <div class="bet-input-group">
-                    <input type="number" class="aposta-input" value="5" min="1" step="1" placeholder="Aposta">
+                     <input type="number" class="aposta-input" value="5" min="1" step="1" placeholder="Unidades">
                     <div class="bet-buttons">
-                        <button class="btn-apostar" data-slot="2" onclick="apostar(2)">APOSTAR</button>
-                        <button class="btn-sacar" data-slot="2" onclick="sacar(2)" disabled>SACAR</button>
+                        <button class="btn-apostar" data-slot="2" onclick="iniciarTeste(2)">INICIAR TESTE</button>
+                        <button class="btn-sacar" data-slot="2" onclick="salvarPonto(2)" disabled>SALVAR PONTO</button>
                     </div>
                 </div>
                 <p class="status-message" id="status-2">PRONTO</p>
@@ -604,8 +604,8 @@
         <hr style="border-color: #33334d;">
 
         <div class="header-info">
-            <button id="ganhar-creditos" onclick="ganharCreditosAnuncio()">
-                📺 Assistir Anúncio (+100 Combustível)
+            <button id="ganhar-unidades" onclick="assistirVideo()">
+                📺 Assistir Vídeo (+100 Unidades)
             </button>
         </div>
 
@@ -621,12 +621,12 @@
 
     <script>
         // ====================================================================
-        // script.js - LÓGICA COMPLETA DO ROCKET X (COM CORREÇÃO DE ÁUDIO E PWA)
+        // script.js - LÓGICA COMPLETA DO ROCKET X (COM TERMINOLOGIA CORRIGIDA)
         // ====================================================================
 
         // --- 1. VARIÁVEIS GLOBAIS DE ESTADO ---
-        let saldo = 1000;
-        const CREDITOS_POR_ANUNCIO = 100;
+        let capital = 1000;
+        const UNIDADES_POR_VIDEO = 100; // Novo nome para créditos
         const BETTING_TIME_MS = 6000;
 
         let multiplicador = 1.00;
@@ -643,15 +643,15 @@
         const MAX_HISTORY = 8;
 
         let slots = {
-            1: { apostaAtual: 0, sacado: false, sacadoMulti: 0, isApostando: false },
-            2: { apostaAtual: 0, sacado: false, sacadoMulti: 0, isApostando: false }
+            1: { unidadesUsadas: 0, salvo: false, salvoMulti: 0, isTestando: false }, // Novo nome para apostaAtual, sacado, isApostando
+            2: { unidadesUsadas: 0, salvo: false, salvoMulti: 0, isTestando: false }
         };
 
         // --- 2. REFERÊNCIAS DOM (HTML) ---
-        const saldoDisplay = document.getElementById('saldo');
+        const capitalDisplay = document.getElementById('capital'); // Nova referência
         const multiDisplay = document.getElementById('multiplicador-display');
         const msgDisplay = document.getElementById('message');
-        const btnGanharCreditos = document.getElementById('ganhar-creditos');
+        const btnGanharUnidades = document.getElementById('ganhar-unidades'); // Nova referência
         const rocket = document.getElementById('rocket');
         const flame = document.querySelector('#rocket .flame');
         const explosionEffect = document.getElementById('explosion-effect');
@@ -685,12 +685,10 @@
         function playSound(audioElement) {
             audioElement.currentTime = 0;
             audioElement.volume = 0.5;
-            // O .catch é crucial para tratar o bloqueio de autoplay dos navegadores.
             audioElement.play().catch(e => console.warn('Aviso: Áudio bloqueado ou não encontrado.', e));
         }
 
         function startMusic() {
-            // Esta função só tenta tocar a música e esconde o aviso UMA VEZ.
             if (musicStarted) return;
             bgMusic.volume = 0.3;
             bgMusic.play().catch(e => console.warn('Aviso: Música de fundo bloqueada.', e));
@@ -698,10 +696,10 @@
             if (audioWarning) audioWarning.style.display = 'none';
         }
 
-        function atualizarSaldo(valor) {
-            saldo = Math.max(0, Math.floor(valor));
-            saldoDisplay.textContent = `Capital: ${saldo} Créditos`;
-            localStorage.setItem('rocketXSaldo', saldo);
+        function atualizarCapital(valor) { // Mudança de nome de função
+            capital = Math.max(0, Math.floor(valor));
+            capitalDisplay.textContent = `Capital: ${capital} Unidades`; // Mensagem atualizada
+            localStorage.setItem('rocketXCapital', capital);
         }
 
         function atualizarHistorico(novoResultado) {
@@ -736,13 +734,13 @@
             currentOnlineUsers = Math.max(250, currentOnlineUsers + change);
             currentOnlineUsers = Math.min(1500, currentOnlineUsers);
 
-            let statusText = `👥 ${currentOnlineUsers} Usuários Online`;
+            let statusText = `👥 ${currentOnlineUsers} Testadores Online`; // Mensagem atualizada
 
             if (bettingPhase) {
                 statusText += ` (Lançamento em ${timeRemaining}s)`;
             } else if (gameRunning) {
-                let numVoando = (slots[1].isApostando && !slots[1].sacado ? 1 : 0) + (slots[2].isApostando && !slots[2].sacado ? 1 : 0);
-                statusText += ` (${numVoando} Apostas em Voo!)`;
+                let numVoando = (slots[1].isTestando && !slots[1].salvo ? 1 : 0) + (slots[2].isTestando && !slots[2].salvo ? 1 : 0); // isTestando
+                statusText += ` (${numVoando} Testes em Andamento!)`; // Mensagem atualizada
             }
 
             playersCountDisplay.textContent = statusText;
@@ -753,24 +751,24 @@
         function validateBetInput(slotId) {
             const panel = betPanels[slotId];
             let apostaInput = panel.input.value;
-            let aposta = parseInt(apostaInput);
+            let unidades = parseInt(apostaInput); // Novo nome
 
-            if (isNaN(aposta) || !Number.isInteger(parseFloat(apostaInput))) {
-                panel.statusMsg.innerHTML = `<span class="error">Aposta inválida. Use números inteiros.</span>`;
+            if (isNaN(unidades) || !Number.isInteger(parseFloat(apostaInput))) {
+                panel.statusMsg.innerHTML = `<span class="error">Valor inválido. Use números inteiros.</span>`; // Mensagem atualizada
                 return false;
             }
 
-            if (aposta < 1) {
-                panel.statusMsg.innerHTML = `<span class="error">Aposta mínima é 1.</span>`;
+            if (unidades < 1) {
+                panel.statusMsg.innerHTML = `<span class="error">Mínimo de 1 unidade.</span>`; // Mensagem atualizada
                 return false;
             }
 
-            if (aposta > saldo) {
-                panel.statusMsg.innerHTML = `<span class="error">Saldo insuficiente!</span>`;
+            if (unidades > capital) { // capital
+                panel.statusMsg.innerHTML = `<span class="error">Capital insuficiente!</span>`; // Mensagem atualizada
                 return false;
             }
 
-            return aposta;
+            return unidades;
         }
 
 
@@ -803,19 +801,18 @@
             multiDisplay.className = 'status-bet-ready';
 
             for (let slotId = 1; slotId <= 2; slotId++) {
-                slots[slotId].apostaAtual = 0;
-                slots[slotId].sacado = false;
-                slots[slotId].sacadoMulti = 0;
-                slots[slotId].isApostando = false;
+                slots[slotId].unidadesUsadas = 0; // Novo nome
+                slots[slotId].salvo = false; // Novo nome
+                slots[slotId].salvoMulti = 0; // Novo nome
+                slots[slotId].isTestando = false; // Novo nome
 
                 betPanels[slotId].btnApostar.disabled = false;
                 betPanels[slotId].btnSacar.disabled = true;
 
-                // INPUT PERMANECE HABILITADO
                 betPanels[slotId].input.disabled = false;
 
                 betPanels[slotId].statusMsg.textContent = 'PRONTO';
-                betPanels[slotId].btnApostar.textContent = 'APOSTAR';
+                betPanels[slotId].btnApostar.textContent = 'INICIAR TESTE'; // Novo nome
             }
 
             rocket.style.transition = 'none';
@@ -834,18 +831,16 @@
 
             if (timeRemaining <= 0) {
                 clearInterval(gameInterval);
-                msgDisplay.textContent = 'APOSTAS FECHADAS! Foguete decolando...';
+                msgDisplay.textContent = 'TESTES FECHADOS! Foguete decolando...'; // Mensagem atualizada
 
                 for (let slotId = 1; slotId <= 2; slotId++) {
-                    // O botão de aposta é desabilitado
                     betPanels[slotId].btnApostar.disabled = true;
-                    // O input permanece HABILITADO
                 }
 
                 setTimeout(() => iniciarRodada(), 1000);
 
             } else {
-                msgDisplay.textContent = `APOSTE AGORA! Tempo restante: ${timeRemaining} segundos.`;
+                msgDisplay.textContent = `PREPARE-SE PARA O TESTE! Tempo restante: ${timeRemaining} segundos.`; // Mensagem atualizada
                 timeRemaining--;
             }
         }
@@ -862,12 +857,10 @@
             crashPoint = gerarCrashPointDificil();
 
             for (let slotId = 1; slotId <= 2; slotId++) {
-                if (slots[slotId].isApostando) {
+                if (slots[slotId].isTestando) { // isTestando
                     betPanels[slotId].btnSacar.disabled = false;
                     betPanels[slotId].statusMsg.textContent = 'VOANDO...';
                 }
-
-                // O input é mantido HABILITADO
             }
 
             flame.classList.add('flame-active');
@@ -900,9 +893,9 @@
             }
 
             for (let slotId = 1; slotId <= 2; slotId++) {
-                if (slots[slotId].isApostando && !slots[slotId].sacado) {
-                    const ganhoPrevisto = slots[slotId].apostaAtual * multiplicador;
-                    betPanels[slotId].btnSacar.textContent = `SACAR ${ganhoPrevisto.toFixed(2)}x`;
+                if (slots[slotId].isTestando && !slots[slotId].salvo) { // isTestando, salvo
+                    const ganhoPrevisto = slots[slotId].unidadesUsadas * multiplicador; // unidadesUsadas
+                    betPanels[slotId].btnSacar.textContent = `SALVAR PONTO ${ganhoPrevisto.toFixed(2)}x`; // Mensagem atualizada
                 }
             }
         }
@@ -929,16 +922,16 @@
             for (let slotId = 1; slotId <= 2; slotId++) {
                 const slot = slots[slotId];
 
-                if (slot.isApostando) {
-                    if (!slot.sacado) {
-                        betPanels[slotId].statusMsg.innerHTML = `<span class="error">❌ PERDEU! Colapso em ${multiplicador.toFixed(2)}x.</span>`;
+                if (slot.isTestando) { // isTestando
+                    if (!slot.salvo) { // salvo
+                        betPanels[slotId].statusMsg.innerHTML = `<span class="error">❌ TESTE INTERROMPIDO em ${multiplicador.toFixed(2)}x.</span>`; // Mensagem atualizada
                     } else {
-                        betPanels[slotId].statusMsg.innerHTML = `<span class="success">✅ SACADO em ${slot.sacadoMulti.toFixed(2)}x.</span>`;
+                        betPanels[slotId].statusMsg.innerHTML = `<span class="success">✅ PONTO SALVO em ${slot.salvoMulti.toFixed(2)}x.</span>`; // Mensagem atualizada
                     }
                 }
             }
 
-            msgDisplay.textContent = `COLAPSO em ${multiplicador.toFixed(2)}x! Fase de aposta iniciando...`;
+            msgDisplay.textContent = `INTERRUPÇÃO em ${multiplicador.toFixed(2)}x! Fase de preparação iniciando...`; // Mensagem atualizada
 
             setTimeout(() => {
                 startBettingPhase();
@@ -949,80 +942,80 @@
         // FUNÇÕES DE INTERAÇÃO DO USUÁRIO
         // ----------------------------------------------------------------------
 
-        function apostar(slotId) {
-            startMusic(); // Chamada para tentar desbloquear o som
+        function iniciarTeste(slotId) { // Novo nome de função
+            startMusic();
 
             if (!bettingPhase) {
-                betPanels[slotId].statusMsg.innerHTML = `<span class="warning">Aguarde a fase de aposta.</span>`;
+                betPanels[slotId].statusMsg.innerHTML = `<span class="warning">Aguarde a fase de preparação.</span>`; // Mensagem atualizada
                 return;
             }
 
-            const aposta = validateBetInput(slotId);
-            if (aposta === false) return;
+            const unidades = validateBetInput(slotId); // unidades
+            if (unidades === false) return;
 
             const slot = slots[slotId];
             const panel = betPanels[slotId];
 
-            atualizarSaldo(saldo - aposta);
+            atualizarCapital(capital - unidades); // capital
 
-            slot.apostaAtual = aposta;
-            slot.isApostando = true;
+            slot.unidadesUsadas = unidades; // unidadesUsadas
+            slot.isTestando = true; // isTestando
 
             panel.btnApostar.disabled = true;
-            panel.btnApostar.textContent = 'FEITO!';
-            panel.btnSacar.textContent = 'SACAR';
+            panel.btnApostar.textContent = 'REGISTRADO!'; // Mensagem atualizada
+            panel.btnSacar.textContent = 'SALVAR PONTO'; // Mensagem atualizada
 
-            panel.statusMsg.textContent = 'APOSTADO! Aguardando o voo.';
+            panel.statusMsg.textContent = 'REGISTRADO! Aguardando o voo.'; // Mensagem atualizada
 
             updateTrafficSimulation();
         }
 
 
-        function sacar(slotId) {
-            startMusic(); // Chamada para tentar desbloquear o som
+        function salvarPonto(slotId) { // Novo nome de função
+            startMusic();
 
             const slot = slots[slotId];
             const panel = betPanels[slotId];
 
-            if (!slot.isApostando || slot.sacado || !gameRunning) return;
+            if (!slot.isTestando || slot.salvo || !gameRunning) return; // isTestando, salvo
 
-            const ganhoTotal = slot.apostaAtual * multiplicador;
-            atualizarSaldo(saldo + ganhoTotal);
-            const lucro = ganhoTotal - slot.apostaAtual;
+            const ganhoTotal = slot.unidadesUsadas * multiplicador; // unidadesUsadas
+            atualizarCapital(capital + ganhoTotal); // capital
+            const lucro = ganhoTotal - slot.unidadesUsadas; // unidadesUsadas
 
-            slot.sacado = true;
-            slot.sacadoMulti = multiplicador;
+            slot.salvo = true; // salvo
+            slot.salvoMulti = multiplicador; // salvoMulti
 
             panel.btnSacar.disabled = true;
-            panel.btnSacar.textContent = `SACADO!`;
-            panel.statusMsg.innerHTML = `<span class="success">🤑 Sacou +${lucro.toFixed(0)} em ${multiplicador.toFixed(2)}x.</span>`;
+            panel.btnSacar.textContent = `SALVO!`; // Mensagem atualizada
+            panel.statusMsg.innerHTML = `<span class="success">✅ Ponto salvo: +${lucro.toFixed(0)} em ${multiplicador.toFixed(2)}x.</span>`; // Mensagem atualizada
 
             playSound(winSound);
             updateTrafficSimulation();
         }
 
-        function ganharCreditosAnuncio() {
-            startMusic(); // Chamada para tentar desbloquear o som
+        function assistirVideo() { // Novo nome de função
+            startMusic();
 
-            if (btnGanharCreditos.disabled) {
-                msgDisplay.innerHTML = '<span class="warning">Anúncio já em andamento.</span>';
+            if (btnGanharUnidades.disabled) {
+                msgDisplay.innerHTML = '<span class="warning">Vídeo já em andamento.</span>';
                 return;
             }
 
-            btnGanharCreditos.disabled = true;
+            btnGanharUnidades.disabled = true;
 
-            const originalButtonText = btnGanharCreditos.textContent;
-            btnGanharCreditos.textContent = '📺 Exibindo... (5s)';
+            const originalButtonText = btnGanharUnidades.textContent;
+            btnGanharUnidades.textContent = '📺 Exibindo... (5s)';
 
-            msgDisplay.innerHTML = '<span class="warning">Processando Anúncio Recompensado...</span>';
+            msgDisplay.innerHTML = '<span class="warning">Processando Vídeo Recompensado...</span>';
 
             setTimeout(() => {
-                atualizarSaldo(saldo + CREDITOS_POR_ANUNCIO);
+                atualizarCapital(capital + UNIDADES_POR_VIDEO); // capital, UNIDADES_POR_VIDEO
 
-                msgDisplay.innerHTML = `<span class="success">🥳 Sucesso! Você recebeu ${CREDITOS_POR_ANUNCIO} créditos de Combustível.</span>`;
+                msgDisplay.innerHTML = `<span class="success">🥳 Sucesso! Você recebeu ${UNIDADES_POR_VIDEO} unidades de Combustível.</span>`; // Mensagem atualizada
 
-                btnGanharCreditos.disabled = false;
-                btnGanharCreditos.textContent = originalButtonText;
+                btnGanharUnidades.disabled = false;
+                btnGanharUnidades.textContent = originalButtonText;
 
                 playSound(winSound);
             }, 5000);
@@ -1033,8 +1026,8 @@
         // ----------------------------------------------------------------------
 
         document.addEventListener('DOMContentLoaded', () => {
-            const savedSaldo = localStorage.getItem('rocketXSaldo');
-            atualizarSaldo(savedSaldo ? parseInt(savedSaldo) : 1000);
+            const savedCapital = localStorage.getItem('rocketXCapital'); // rocketXCapital
+            atualizarCapital(savedCapital ? parseInt(savedCapital) : 1000);
 
             const savedHistory = localStorage.getItem('rocketXHistory');
             if (savedHistory) {
@@ -1050,10 +1043,9 @@
         // ----------------------------------------------------------------------
         // 7. REGISTRO DO SERVICE WORKER (Para funcionalidade PWA)
         // ----------------------------------------------------------------------
-        // ESSENCIAL: Permite que o site seja instalado como um APP
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // O caminho para o service worker deve ser './sw.js'
                 navigator.serviceWorker.register('./sw.js')
                     .then(reg => console.log('Service Worker Registrado com sucesso:', reg.scope))
                     .catch(err => console.error('Falha ao registrar Service Worker:', err));
